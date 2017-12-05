@@ -93,6 +93,7 @@ public class FXMLLoginController implements Initializable {
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
@@ -141,7 +142,7 @@ public class FXMLLoginController implements Initializable {
         scene.setFill(Color.TRANSPARENT);
         stageAlerte.initModality(Modality.APPLICATION_MODAL);
         stageAlerte.setScene(scene);
-        
+
         if (!utilisateurMotDePasseOublieTextField.getText().isEmpty()) {
             int result = userFacade.sendPW(utilisateurMotDePasseOublieTextField.getText());
             switch (result) {
@@ -190,7 +191,7 @@ public class FXMLLoginController implements Initializable {
         scene.setFill(Color.TRANSPARENT);
         stageAlerte.initModality(Modality.APPLICATION_MODAL);
         stageAlerte.setScene(scene);
-        
+
         User user = getInscrireParams();
         if (inscriptionPermis(user)) {
             Object[] res = userFacade.addUser(user);
@@ -215,24 +216,22 @@ public class FXMLLoginController implements Initializable {
                         break;
                 }
             }
+        } else if (user.getUserName().equals("")) {
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
+            stageAlerte.show();
+        } else if (user.getEmail().equals("")) {
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
+            stageAlerte.show();
+        } else if (user.getPassword().equals("")) {
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Mot de passe non valide !");
+            stageAlerte.show();
         } else {
-            if (user.getUserName().equals("")) {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
-                stageAlerte.show();
-            } else if (user.getEmail().equals("")) {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
-                stageAlerte.show();
-            } else if (user.getPassword().equals("")) {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("Mot de passe non valide !");
-                stageAlerte.show();
-            } else {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
-                stageAlerte.show();
-            }
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
+            stageAlerte.show();
         }
 
     }
@@ -303,6 +302,11 @@ public class FXMLLoginController implements Initializable {
 
             } else {
                 switch (res1) {
+                    case -6:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("Cette compte est deja connectée sur une autre session !");
+                        stageAlerte.show();
+                        break;
                     case -5:
                     case -4:
                         alerteController.erreurAnchorPane.toFront();

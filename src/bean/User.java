@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 
 /**
@@ -38,6 +39,8 @@ public class User implements Serializable {
     private int nbrCnx;
     private int blocked;
     private boolean status;
+    @ManyToOne
+    private Pays paye;
 
     public User() {
     }
@@ -157,6 +160,14 @@ public class User implements Serializable {
         this.status = status;
     }
 
+    public Pays getPaye() {
+        return paye;
+    }
+
+    public void setPaye(Pays paye) {
+        this.paye = paye;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -179,7 +190,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return userName ;
+        return userName;
     }
 
 }

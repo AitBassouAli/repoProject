@@ -6,12 +6,10 @@
 package service;
 
 import bean.User;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.mail.MessagingException;
@@ -28,6 +26,7 @@ public class UserFacade extends AbstractFacade<User> {
     public UserFacade() {
         super(User.class);
     }
+    ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
 
     public User find(String id) {
         try {
@@ -63,9 +62,15 @@ public class UserFacade extends AbstractFacade<User> {
 
     }
 
+    public List<User> getUsers() {
+        List<User> connectedUsers = connectedUsersFacade.getUsers();
+        return connectedUsers;
+    }
+
     public User deconnecter(User user) {
         user.setStatus(false);
         user.setIpAdress(null);
+        connectedUsersFacade.deconnect(user);
         edit(user);
         return null;
     }
@@ -99,7 +104,10 @@ public class UserFacade extends AbstractFacade<User> {
             return new Object[]{-1, null};
         } else {
             User loadedUser = find(user.getUserName());
-            if (loadedUser == null) {
+            if (connectedUsersFacade.findByUser(loadedUser) != null) {
+                System.out.println("deja connectee !!");
+                return new Object[]{-6, null};
+            } else if (loadedUser == null) {
                 return new Object[]{-2, null};
             } else if (!loadedUser.getPassword().equals(HashageUtil.sha256(user.getPassword()))) {
                 if (loadedUser.getNbrCnx() < 3) {
@@ -123,6 +131,7 @@ public class UserFacade extends AbstractFacade<User> {
                 edit(loadedUser);
                 user = clone(loadedUser);
                 user.setPassword(null);
+                connectedUsersFacade.connect(loadedUser);
                 return new Object[]{1, loadedUser};
             }
         }
@@ -169,7 +178,7 @@ public class UserFacade extends AbstractFacade<User> {
                 userEmail = loadedUser.getEmail();
                 loadedUserEmail = loadedUser;
             }
-            
+
             String pw = RandomStringUtil.generate();
             String msg = "Bienvenu Mr. " + loadedUserEmail.getNom() + ",<br/>"
                     + "D'après votre demande de reinitialiser le mot de passe de votre compte TaxeSejour, nous avons generer ce mot de passe pour vous.\n"
@@ -202,7 +211,6 @@ public class UserFacade extends AbstractFacade<User> {
         return clone;
     }
 
-    
     private static InetAddress getLocalHostLANAddress() throws UnknownHostException {
         Enumeration ifaces;
         try {
@@ -218,8 +226,7 @@ public class UserFacade extends AbstractFacade<User> {
                         if (inetAddr.isSiteLocalAddress()) {
                             // Found non-loopback site-local address. Return it immediately...
                             return inetAddr;
-                        }
-                        else if (candidateAddress == null) {
+                        } else if (candidateAddress == null) {
                             candidateAddress = inetAddr;
                         }
                     }
@@ -233,8 +240,7 @@ public class UserFacade extends AbstractFacade<User> {
                 throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
             }
             return jdkSuppliedAddress;
-        }
-        catch (SocketException | UnknownHostException e) {
+        } catch (SocketException | UnknownHostException e) {
             UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address: " + e);
             unknownHostException.initCause(e);
             throw unknownHostException;
@@ -242,4 +248,3 @@ public class UserFacade extends AbstractFacade<User> {
     }
 
 }
-

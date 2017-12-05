@@ -5,6 +5,7 @@
  */
 package chat.app.main;
 
+import bean.Pays;
 import bean.User;
 import chat.app.alerte.FXMLAlerteController;
 import chat.app.login.FXMLLoginController;
@@ -43,6 +44,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import service.PaysFacade;
 import service.UserFacade;
 import util.DateUtil;
 import util.Session;
@@ -91,7 +93,7 @@ public class FXMLMainController implements Initializable {
     @FXML
     private JFXComboBox<String> sexeComboBox;
     @FXML
-    private JFXComboBox<String> paysComboBox;
+    private JFXComboBox<Pays> paysComboBox;
     @FXML
     private JFXTextField utilisateurTextField;
     @FXML
@@ -126,24 +128,36 @@ public class FXMLMainController implements Initializable {
     private double xOffset = 0;
     private double yOffset = 0;
     private UserFacade userFacade = new UserFacade();
+    private PaysFacade paysFacade = new PaysFacade();
     private User connectedUser = (User) Session.getAttribut("connectedUser");
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        List<User> usersConnectee = userFacade.findConnectedUsers();
-        // usersConnectee.remove(connectedUser);
+        new Thread(() -> {
+            while (connectedUser != null) {
+                try {
+                    initListView();
+                    System.out.println("initialisation ....");
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    System.out.println("interrupted");
+                }
+            }
+        }).start();
+        List<User> usersConnectee = userFacade.getUsers();
+        usersConnectee.remove(connectedUser);
         utilisateursListView.getItems().setAll(usersConnectee);
-        // TODO
     }
 
-    public void uinitList() {
-        List<User> usersConnectee = userFacade.findConnectedUsers();
-        // usersConnectee.remove(connectedUser);
+    public void initListView() {
+        List<User> usersConnectee = userFacade.getUsers();
+        usersConnectee.remove(connectedUser);
         utilisateursListView.getItems().setAll(usersConnectee);
     }
 
@@ -174,16 +188,20 @@ public class FXMLMainController implements Initializable {
         dateDeNaissanceDatePicker.setValue(connectedUser.getDateNaissance() == null ? LocalDate.now() : DateUtil.dateToLocalDate(connectedUser.getDateNaissance()));
         sexeComboBox.setItems(FXCollections.observableArrayList(Arrays.asList("Muscelin", "Fiminun")));
         sexeComboBox.getSelectionModel().select(connectedUser.getSexe());
-        paysComboBox.setItems(FXCollections.observableArrayList(Arrays.asList("maroc", "morroco")));
-        paysComboBox.getSelectionModel().select(0);
+        paysComboBox.setItems(FXCollections.observableArrayList(paysFacade.findAll()));
+        paysComboBox.getSelectionModel().select(connectedUser.getPaye() == null ? paysComboBox.getItems().get(0) : connectedUser.getPaye());
         utilisateurTextField.setText(connectedUser.getUserName() == null ? "" : connectedUser.getUserName());
+    }
+
+    private void deconnect() {
+        connectedUser = userFacade.deconnecter(connectedUser);
+        Session.setAttribut(null, "connectedUser");
     }
 
     @FXML
     private void deconnexionLabelOnMouseClicked(MouseEvent event) throws IOException {
 
-        connectedUser = userFacade.deconnecter(connectedUser);
-        Session.setAttribut(null, "connectedUser");
+        deconnect();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
         Parent root = (Parent) loader.load();
@@ -234,7 +252,7 @@ public class FXMLMainController implements Initializable {
         scene.setFill(Color.TRANSPARENT);
         stageAlerte.initModality(Modality.APPLICATION_MODAL);
         stageAlerte.setScene(scene);
-        
+
         User user = getNewParams();
         if (conditionPermis(user)) {
             user = userFacade.modifier(user, connectedUser);
@@ -250,27 +268,27 @@ public class FXMLMainController implements Initializable {
                 utilisateursAnchorPane.toFront();
                 chatAppFirstAnchorPane.toFront();
                 rechercherTextField.requestFocus();
+                initListView();
             }
 
+        } else if (user.getUserName().equals("")) {
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
+            stageAlerte.show();
+        } else if (user.getEmail().equals("")) {
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
+            stageAlerte.show();
         } else {
-            if (user.getUserName().equals("")) {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
-                stageAlerte.show();
-            } else if (user.getEmail().equals("")) {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
-                stageAlerte.show();
-            } else {
-                alerteController.attentionAnchorPane.toFront();
-                alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
-                stageAlerte.show();
-            }
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
+            stageAlerte.show();
         }
     }
 
     @FXML
     private void AnnulerButtonOnAction(ActionEvent event) {
+        initListView();
         utilisateursAnchorPane.toFront();
         chatAppFirstAnchorPane.toFront();
         rechercherTextField.requestFocus();
@@ -286,6 +304,7 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void quitterButtonOnMouseClicked(MouseEvent event) {
+        deconnect();
         Platform.exit();
     }
 
@@ -317,6 +336,7 @@ public class FXMLMainController implements Initializable {
         user.setUserName(utilisateurTextField.getText());
         user.setDateNaissance(DateUtil.localDateToDate(dateDeNaissanceDatePicker.getValue()));
         user.setSexe("Muscelin".equals(sexeComboBox.getValue()) ? 0 : 1);
+        user.setPaye(paysComboBox.getValue());
         user.setPassword(motDePassePasswordField.getText());
         return user;
     }
@@ -473,11 +493,11 @@ public class FXMLMainController implements Initializable {
         this.sexeComboBox = sexeComboBox;
     }
 
-    public JFXComboBox<String> getPaysComboBox() {
+    public JFXComboBox<Pays> getPaysComboBox() {
         return paysComboBox;
     }
 
-    public void setPaysComboBox(JFXComboBox<String> paysComboBox) {
+    public void setPaysComboBox(JFXComboBox<Pays> paysComboBox) {
         this.paysComboBox = paysComboBox;
     }
 
