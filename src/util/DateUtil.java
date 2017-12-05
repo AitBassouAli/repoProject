@@ -110,11 +110,11 @@ public class DateUtil {
         }
     }
 
-    public static Optional<ButtonType> alerter(Alert.AlertType type, String title, String header, String content) {
+    /*public static Optional<ButtonType> alerter(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         return alert.showAndWait();
-    }
+    }*/
 }

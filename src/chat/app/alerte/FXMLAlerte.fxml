@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane style="-fx-background-color: 0,100,0;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.app.alerte.FXMLAlerteController">
+   <children>
+      <AnchorPane id="AnchorPane" fx:id="succesAnchorPane" prefHeight="170.0" prefWidth="400.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #4CAF50; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;" styleClass="mainFxmlClass">
+         <stylesheets>
+            <URL value="@../../../../../../../Desktop/Chat%20App%2019/src/chat/app/connexion/fxmlconnexion.css" />
+         </stylesheets>
+         <children>
+            <AnchorPane>
+               <children>
+                  <AnchorPane prefHeight="50.0" prefWidth="400.0" style="-fx-background-color: #4CAF50; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+                     <children>
+                        <Label alignment="CENTER" layoutX="176.0" layoutY="13.0" text="Succès" textFill="#f3f3f3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="400.0" style="-fx-background-color: #4CAF50;" />
+               </children>
+            </AnchorPane>
+            <JFXButton fx:id="annulerSuccesButton" layoutX="150.0" layoutY="121.0" onAction="#annulerButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #64C94F; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#f3f3f3" />
+            <MaterialDesignIconView fill="#4caf50" glyphName="CHECKBOX_MARKED_CIRCLE" layoutX="14.0" layoutY="108.0" size="50" />
+            <Label fx:id="succesLabel" layoutX="71.0" layoutY="68.0" prefHeight="43.0" prefWidth="311.0" text="Succès" textFill="#4d4d4d" textOverrun="CLIP" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="-6.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane id="AnchorPane" fx:id="attentionAnchorPane" prefHeight="170.0" prefWidth="400.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #F39C12; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;" styleClass="mainFxmlClass">
+         <stylesheets>
+            <URL value="@../../../../../../../Desktop/Chat%20App%2019/src/chat/app/connexion/fxmlconnexion.css" />
+         </stylesheets>
+         <children>
+            <AnchorPane>
+               <children>
+                  <AnchorPane prefHeight="50.0" prefWidth="400.0" style="-fx-background-color: #F39C12; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+                     <children>
+                        <Label alignment="CENTER" layoutX="167.0" layoutY="13.0" text="Attention" textFill="#f3f3f3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="400.0" style="-fx-background-color: #F39C12;" />
+               </children>
+            </AnchorPane>
+            <JFXButton fx:id="annulerAttentionButton" layoutX="150.0" layoutY="121.0" onAction="#annulerButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #F39C12; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#f3f3f3" />
+            <MaterialDesignIconView fill="#f39c12" glyphName="ALERT_CIRCLE" layoutX="14.0" layoutY="108.0" size="50" />
+            <Label fx:id="attentionLabel" layoutX="71.0" layoutY="68.0" prefHeight="43.0" prefWidth="311.0" text="Attention" textFill="#4d4d4d" textOverrun="CLIP" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="-6.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane id="AnchorPane" fx:id="erreurAnchorPane" prefHeight="170.0" prefWidth="400.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #E74C3C; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;" styleClass="mainFxmlClass">
+         <stylesheets>
+            <URL value="@../../../../../../../Desktop/Chat%20App%2019/src/chat/app/connexion/fxmlconnexion.css" />
+         </stylesheets>
+         <children>
+            <AnchorPane>
+               <children>
+                  <AnchorPane prefHeight="50.0" prefWidth="400.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+                     <children>
+                        <Label alignment="CENTER" layoutX="179.0" layoutY="13.0" text="Erreur" textFill="#f3f3f3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="400.0" style="-fx-background-color: #E74C3C;" />
+               </children>
+            </AnchorPane>
+            <JFXButton fx:id="annulerErreurButton" layoutX="150.0" layoutY="121.0" onAction="#annulerButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#f3f3f3" />
+            <MaterialDesignIconView fill="#e74c3c" glyphName="ALERT_OCTAGON" layoutX="14.0" layoutY="108.0" size="50" />
+            <Label fx:id="erreurLabel" layoutX="71.0" layoutY="68.0" prefHeight="43.0" prefWidth="311.0" text="Erreur" textFill="#4d4d4d" textOverrun="CLIP" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="-6.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane id="AnchorPane" fx:id="infomationAnchorPane" prefHeight="170.0" prefWidth="400.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #3199DC; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;" styleClass="mainFxmlClass">
+         <stylesheets>
+            <URL value="@../../../../../../../Desktop/Chat%20App%2019/src/chat/app/connexion/fxmlconnexion.css" />
+         </stylesheets>
+         <children>
+            <AnchorPane>
+               <children>
+                  <AnchorPane prefHeight="50.0" prefWidth="400.0" style="-fx-background-color: #3199DC; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+                     <children>
+                        <Label alignment="CENTER" layoutX="159.0" layoutY="13.0" text="Information" textFill="#f3f3f3">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="400.0" style="-fx-background-color: #3199DC;" />
+               </children>
+            </AnchorPane>
+            <JFXButton fx:id="annulerInformationButton" layoutX="150.0" layoutY="121.0" onAction="#annulerButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #3199DC; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#f3f3f3" />
+            <MaterialDesignIconView fill="#3199dc" glyphName="INFORMATION" layoutX="14.0" layoutY="108.0" size="50" />
+            <Label fx:id="informationLabel" layoutX="71.0" layoutY="68.0" prefHeight="43.0" prefWidth="311.0" text="Information" textFill="#4d4d4d" textOverrun="CLIP" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="-6.0" />
+         </padding>
+      </AnchorPane>
+   </children>
+</AnchorPane>

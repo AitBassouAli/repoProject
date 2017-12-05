@@ -27,11 +27,6 @@
          <children>
             <AnchorPane fx:id="profilUtilisateurAnchorPane" layoutX="800.0" layoutY="3.0" prefHeight="456.0" prefWidth="194.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
                <children>
-                  <MaterialDesignIconView fx:id="imageProfilUtilisateurIconView" accessibleRole="IMAGE_VIEW" fill="#1976d2" glyphName="ACCOUNT_CIRCLE" layoutX="49.0" layoutY="214.0" size="100" textAlignment="CENTER" />
-                  <ImageView fx:id="imageProfilUtilisateurImageView" fitHeight="100.0" fitWidth="100.0" layoutX="50.0" layoutY="127.0" onMouseClicked="#imageProfilUtilisateurImageViewOnMouseClicked" pickOnBounds="true" preserveRatio="true">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor></ImageView>
                   <Label fx:id="utilisateurLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="5.0" layoutY="235.0" onMouseClicked="#motDePasseOublieLabelOnMouseClicked" prefHeight="25.0" prefWidth="188.0" text="User Name" textAlignment="CENTER" textFill="#1976d2">
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
@@ -56,6 +51,11 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
+                  <MaterialDesignIconView fx:id="imageProfilUtilisateurIconView" accessibleRole="IMAGE_VIEW" fill="#1976d2" glyphName="ACCOUNT_CIRCLE" layoutX="49.0" layoutY="214.0" size="100" textAlignment="CENTER" />
+                  <ImageView fx:id="imageProfilUtilisateurImageView" fitHeight="100.0" fitWidth="100.0" layoutX="50.0" layoutY="127.0" onMouseClicked="#imageProfilUtilisateurImageViewOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ImageView>
                   <FontAwesomeIconView fx:id="quitterButton" fill="#1976d2" glyphName="TIMES_CIRCLE" layoutX="176.0" layoutY="20.0" onMouseClicked="#quitterButtonOnMouseClicked" size="20" />
                   <FontAwesomeIconView fx:id="minimiserButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="154.0" layoutY="20.0" onMouseClicked="#minimiserButtonOnMouseClicked" size="20" />
                </children>
@@ -90,6 +90,20 @@
          <children>
             <AnchorPane fx:id="messagesAnchorPane" prefHeight="559.0" prefWidth="558.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
                <children>
+                  <AnchorPane layoutX="6.0" layoutY="505.0" prefHeight="48.0" prefWidth="547.0" style="-fx-background-color: #F3F3F3;">
+                     <children>
+                        <JFXTextArea fx:id="messageAEnvoyerTextArea" focusColor="#1976d2" layoutX="10.0" layoutY="8.0" prefHeight="32.0" prefWidth="484.0" promptText="Écrivez un message..." style="-fx-background-color: #F3F3F3;">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextArea>
+                        <FontAwesomeIconView fx:id="envoyerMessageIconView" fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" layoutX="503.0" layoutY="36.0" onMouseClicked="#envoyerMessageIconViewOnMouseClicked" size="35">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </FontAwesomeIconView>
+                     </children>
+                  </AnchorPane>
                   <AnchorPane layoutX="6.0" layoutY="6.0" prefHeight="37.0" prefWidth="547.0" style="-fx-background-color: #F3F3F3;">
                      <children>
                         <FontAwesomeIconView fx:id="parametresConversationIconView" fill="#1976d2" glyphName="ELLIPSIS_V" layoutX="530.0" layoutY="26.0" size="25">
@@ -116,20 +130,6 @@
                      </children>
                   </AnchorPane>
                   <Line endX="422.0" layoutX="118.0" layoutY="43.0" startX="-100.0" stroke="#4d4d4d" />
-                  <AnchorPane layoutX="6.0" layoutY="505.0" prefHeight="48.0" prefWidth="547.0" style="-fx-background-color: #F3F3F3;">
-                     <children>
-                        <JFXTextArea fx:id="messageAEnvoyerTextArea" focusColor="#1976d2" layoutX="10.0" layoutY="8.0" prefHeight="32.0" prefWidth="484.0" promptText="Écrivez un message..." style="-fx-background-color: #F3F3F3;">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </JFXTextArea>
-                        <FontAwesomeIconView fx:id="envoyerMessageIconView" fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" layoutX="503.0" layoutY="36.0" onMouseClicked="#envoyerMessageIconViewOnMouseClicked" size="35">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </FontAwesomeIconView>
-                     </children>
-                  </AnchorPane>
                   <TextArea fx:id="messagesTextArea" editable="false" focusTraversable="false" layoutX="18.0" layoutY="53.0" prefHeight="443.0" prefWidth="523.0" style="-fx-border-color: #4d4d4d; -fx-border-radius: 5;">
                      <font>
                         <Font name="System Bold" size="12.0" />

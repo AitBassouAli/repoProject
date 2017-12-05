@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="224.0" prefWidth="289.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.app.connexion.FXMLConnexionController">
+   <stylesheets>
+      <URL value="@../../../../../../../Desktop/Chat%20App%2019/src/chat/app/connexion/fxmlconnexion.css" />
+   </stylesheets>
+   <children>
+      <AnchorPane>
+         <children>
+            <AnchorPane prefHeight="50.0" prefWidth="289.0" style="-fx-background-color: #1976D2; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <Label layoutX="68.0" layoutY="11.0" text="Connexion au serveur" textFill="#f3f3f3">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="289.0" style="-fx-background-color: #1976D2;" />
+         </children>
+      </AnchorPane>
+      <JFXTextField fx:id="adresseDuServeurTextField" alignment="CENTER" focusColor="#1976d2" labelFloat="true" layoutX="29.0" layoutY="75.0" prefHeight="25.0" prefWidth="231.0" promptText="Adresse du serveur">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="portTextField" alignment="CENTER" focusColor="#1976d2" labelFloat="true" layoutX="29.0" layoutY="122.0" prefHeight="25.0" prefWidth="231.0" promptText="Port">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </JFXTextField>
+      <JFXButton fx:id="connexionButton" layoutX="160.0" layoutY="175.0" onAction="#connexionButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #1976d2; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Connexion" textFill="#f3f3f3" />
+      <JFXButton fx:id="AnnulerButton" layoutX="29.0" layoutY="175.0" onAction="#annulerButtonOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976d2; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#1976d2" />
+   </children>
+   <padding>
+      <Insets left="-6.0" />
+   </padding>
+</AnchorPane>

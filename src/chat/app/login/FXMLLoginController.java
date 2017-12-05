@@ -6,16 +6,17 @@
 package chat.app.login;
 
 import bean.User;
+import chat.app.alerte.FXMLAlerteController;
 import chat.app.main.FXMLMainController;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import service.UserFacade;
@@ -91,6 +93,8 @@ public class FXMLLoginController implements Initializable {
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -100,52 +104,135 @@ public class FXMLLoginController implements Initializable {
 
     @FXML
     private void seConnecterButtonOnAction(ActionEvent event) {
+        utilisateurSeConnecterTextField.setText("");
+        motDePasseSeConnecterPasswordField.setText("");
         seConnecterAnchorPane.toFront();
         utilisateurSeConnecterTextField.requestFocus();
     }
 
     @FXML
     private void inscrireButtonOnAction(ActionEvent event) {
+        utilisateurInscrireTextField.setText("");
+        emailInscrireTextField.setText("");
+        motDePasseInscrirePasswordField.setText("");
+        confirmerMotDePasseInscrirePasswordField.setText("");
         inscrireAnchorPane.toFront();
         utilisateurInscrireTextField.requestFocus();
     }
 
     @FXML
-    private void motDePasseOublieLoginButtonOnAction(ActionEvent event) {
-        /*
-        hada button dyal mot de passe oublier hnaya ghadi ichof wach lidakhal f textfield
-        "utilisateurMotDePasseOublieTextField" ila kan email wala utilisateur ghadir
-        requete i verifie dak email wala utilisateur wach kaynin f bd
-        ila kaynin ghaygenere wahd mot de passe ibadlo f bd puis isifto l dak email 
-         */
+    private void motDePasseOublieLoginButtonOnAction(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/alerte/FXMLAlerte.fxml"));
+        Parent root = (Parent) loader.load();
+        FXMLAlerteController alerteController = loader.getController();
+        Stage stageAlerte = new Stage();
+        stageAlerte.initStyle(StageStyle.TRANSPARENT);
+
+        root.setOnMousePressed((MouseEvent event1) -> {
+            xOffset = event1.getSceneX();
+            yOffset = event1.getSceneY();
+        });
+        root.setOnMouseDragged((MouseEvent event1) -> {
+            stageAlerte.setX(event1.getScreenX() - xOffset);
+            stageAlerte.setY(event1.getScreenY() - yOffset);
+        });
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        stageAlerte.initModality(Modality.APPLICATION_MODAL);
+        stageAlerte.setScene(scene);
+        
         if (!utilisateurMotDePasseOublieTextField.getText().isEmpty()) {
-            userFacade.sendPW(utilisateurMotDePasseOublieTextField.getText());
+            int result = userFacade.sendPW(utilisateurMotDePasseOublieTextField.getText());
+            switch (result) {
+                case -2:
+                    alerteController.erreurAnchorPane.toFront();
+                    alerteController.erreurLabel.setText("Échec de l'envoi du mot de passe !");
+                    stageAlerte.show();
+                    break;
+                case -1:
+                    alerteController.erreurAnchorPane.toFront();
+                    alerteController.erreurLabel.setText("Le nom d'utilisateur ou adresse e-mail n'existe pas !");
+                    stageAlerte.show();
+                    break;
+                case 1:
+                    alerteController.succesAnchorPane.toFront();
+                    alerteController.succesLabel.setText("Votre mot de passe a été envoyé");
+                    stageAlerte.show();
+                    seConnecterButtonOnAction(new ActionEvent());
+                    break;
+            }
         } else {
-            DateUtil.alerter(Alert.AlertType.INFORMATION, null, null, "Saisie votre Email ");
+            alerteController.infomationAnchorPane.toFront();
+            alerteController.informationLabel.setText("Veuillez saisir votre nom d'utilisateur ou votre adresse e-mail");
+            stageAlerte.show();
         }
     }
 
     @FXML
-    private void inscrireLoginButtonOnAction(ActionEvent event) {
-        /*
-        hada button dyal inscrire fhad button khas i verifie kbal wach dak utilisateur kayn deja
-        wala la hta l email ila makanoch deja ghadi i ajouter automatique ila makanch i3ti erreur
-        o hta password khas ikono matchabhin o fih au moins lettre o digit hna ghansta3mlo les petterns
-        ila kan utilisateur kayn deja f bd khas textField "utilisateurInscrireTextField" twali b rouge
-        ohta "emailInscrireTextField" dyal email ila kan deja twali b rouge 
-         */
+    private void inscrireLoginButtonOnAction(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/alerte/FXMLAlerte.fxml"));
+        Parent root = (Parent) loader.load();
+        FXMLAlerteController alerteController = loader.getController();
+        Stage stageAlerte = new Stage();
+        stageAlerte.initStyle(StageStyle.TRANSPARENT);
+
+        root.setOnMousePressed((MouseEvent event1) -> {
+            xOffset = event1.getSceneX();
+            yOffset = event1.getSceneY();
+        });
+        root.setOnMouseDragged((MouseEvent event1) -> {
+            stageAlerte.setX(event1.getScreenX() - xOffset);
+            stageAlerte.setY(event1.getScreenY() - yOffset);
+        });
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        stageAlerte.initModality(Modality.APPLICATION_MODAL);
+        stageAlerte.setScene(scene);
+        
         User user = getInscrireParams();
         if (inscriptionPermis(user)) {
             Object[] res = userFacade.addUser(user);
             int res1 = (int) res[0];
             user = (User) res[1];
             if (res1 == 1) {
+                alerteController.succesAnchorPane.toFront();
+                alerteController.succesLabel.setText("Votre compte a été créé avec succès");
+                stageAlerte.show();
                 seConnecterButtonOnAction(new ActionEvent());
             } else {
-                afficheMessage(res1);
+                switch (res1) {
+                    case -2:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("L'adresse e-mail existe déjà !");
+                        stageAlerte.show();
+                        break;
+                    case -1:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("Le nom d'utilisateur existe déjà !");
+                        stageAlerte.show();
+                        break;
+                }
             }
         } else {
-            DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Invalid Informations !");
+            if (user.getUserName().equals("")) {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
+                stageAlerte.show();
+            } else if (user.getEmail().equals("")) {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
+                stageAlerte.show();
+            } else if (user.getPassword().equals("")) {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("Mot de passe non valide !");
+                stageAlerte.show();
+            } else {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
+                stageAlerte.show();
+            }
         }
 
     }
@@ -160,30 +247,26 @@ public class FXMLLoginController implements Initializable {
 
     @FXML
     private void seConnecterLoginButtonOnAction(ActionEvent event) throws Exception {
+        FXMLLoader loaderAlerte = new FXMLLoader(getClass().getResource("/chat/app/alerte/FXMLAlerte.fxml"));
+        Parent rootAlerte = (Parent) loaderAlerte.load();
+        FXMLAlerteController alerteController = loaderAlerte.getController();
+        Stage stageAlerte = new Stage();
+        stageAlerte.initStyle(StageStyle.TRANSPARENT);
 
-        /*
-        had button dyal se connecter
-        khas hna madakhil user o password otacklicki 3la button dyal se connecter
-        ghadi iverfier bwahd requete ila kan dak utilisateur kayn f base de donnes
-        ila makanch ghadi i3ti wahd erreur oghadi irad had les textfield
-        "utilisateurSeConnecterTextField" et "motDePasseSeConnecterPasswordField"
-        b rouge oydir focus 3la textfield "utilisateurSeConnecterTextField" bach i3awd iktib
-        obinisba lcode liltaht howa likaykhilina ndozo lpage main had lcode ndiroh mn ba3d manverifiew
-        utilisateur bli kayn f bd
-         */
- /*
-        ohna ghanbadlo ta status nradoh true ya3ni mconnecte o nhato nouvelle ip
-        bach dkhal onchofo ila kayn des historique dyal des conversation darhom had user
-        ila kano khasna njibo les utilisateur lidar m3ahom f kol conversation
-        onhatohom f "utilisateursListView" btartib 3la hssab date de creation likayna f base 
-        de donne !! hadchi ila ghandiro les historique ila mandiroch hadchi saf ghadi nlistiw direct
-        les utilisateurs online likaynin f base de donnes ya3ni 3andhom status true b ordre alphabetique
-        okayn dak textfield Rechercher fokach ma ktib gha yfiltri les utilisateur online o y afichihom
-        en meme temp f dik list !!
-         */
- /*
-         login function 
-         */
+        rootAlerte.setOnMousePressed((MouseEvent event1) -> {
+            xOffset = event1.getSceneX();
+            yOffset = event1.getSceneY();
+        });
+        rootAlerte.setOnMouseDragged((MouseEvent event1) -> {
+            stageAlerte.setX(event1.getScreenX() - xOffset);
+            stageAlerte.setY(event1.getScreenY() - yOffset);
+        });
+
+        Scene sceneAlerte = new Scene(rootAlerte);
+        sceneAlerte.setFill(Color.TRANSPARENT);
+        stageAlerte.initModality(Modality.APPLICATION_MODAL);
+        stageAlerte.setScene(sceneAlerte);
+
         User user = getSeConnecterParams();
         if (seConecterPermis(user)) {
             Object[] res = userFacade.seConnecter(user);
@@ -199,19 +282,13 @@ public class FXMLLoginController implements Initializable {
                 Stage stageMain = new Stage();
                 stageMain.initStyle(StageStyle.TRANSPARENT);
 
-                root.setOnMousePressed(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        xOffset = event.getSceneX();
-                        yOffset = event.getSceneY();
-                    }
+                root.setOnMousePressed((MouseEvent event1) -> {
+                    xOffset = event1.getSceneX();
+                    yOffset = event1.getSceneY();
                 });
-                root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        stageMain.setX(event.getScreenX() - xOffset);
-                        stageMain.setY(event.getScreenY() - yOffset);
-                    }
+                root.setOnMouseDragged((MouseEvent event1) -> {
+                    stageMain.setX(event1.getScreenX() - xOffset);
+                    stageMain.setY(event1.getScreenY() - yOffset);
                 });
 
                 Scene scene = new Scene(root);
@@ -225,33 +302,40 @@ public class FXMLLoginController implements Initializable {
                 stageMain.show();
 
             } else {
-                afficheMessage(res1);
+                switch (res1) {
+                    case -5:
+                    case -4:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("Votre compte a été bloqué !");
+                        stageAlerte.show();
+                        break;
+                    case -3:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("Le mot de passe est incorrect !");
+                        stageAlerte.show();
+                        break;
+                    case -2:
+                        alerteController.erreurAnchorPane.toFront();
+                        alerteController.erreurLabel.setText("Le nom d'utilisateur n'existe pas !");
+                        stageAlerte.show();
+                        break;
+                    case -1:
+                        alerteController.attentionAnchorPane.toFront();
+                        alerteController.attentionLabel.setText("Tout les champs sont requis !");
+                        stageAlerte.show();
+                        break;
+                }
             }
         } else {
-            DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Tout les champs sont requis !");
+            alerteController.attentionAnchorPane.toFront();
+            alerteController.attentionLabel.setText("Tout les champs sont requis !");
+            stageAlerte.show();
         }
 
     }
 
     public boolean seConecterPermis(User user) {
         return !(utilisateurSeConnecterTextField.getText().isEmpty() || motDePasseSeConnecterPasswordField.getText().isEmpty());
-    }
-
-    public void afficheMessage(int res) {
-        switch (res) {
-            case -1:
-                DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Login unvalide !");
-                break;
-            case -2:
-                DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Mot de passe incorrect !");
-                break;
-            case -3:
-                DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Email ou Nom D'utilisature deja prise !");
-            case -6:
-                DateUtil.alerter(Alert.AlertType.ERROR, "error", null, "Deja connectee sur un autre Session !");
-                break;
-
-        }
     }
 
     private User getInscrireParams() {
@@ -264,6 +348,7 @@ public class FXMLLoginController implements Initializable {
 
     @FXML
     private void motDePasseOublieLabelOnMouseClicked(MouseEvent event) {
+        utilisateurMotDePasseOublieTextField.setText("");
         motDePasseOublieAnchorPane.toFront();
         utilisateurMotDePasseOublieTextField.requestFocus();
     }

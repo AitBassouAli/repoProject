@@ -5,8 +5,14 @@
  */
 package service;
 
-import bean.ConnectedUsers;
 import bean.User;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.mail.MessagingException;
 import util.EmailUtil;
@@ -22,7 +28,6 @@ public class UserFacade extends AbstractFacade<User> {
     public UserFacade() {
         super(User.class);
     }
-    ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
 
     public User find(String id) {
         try {
@@ -51,11 +56,6 @@ public class UserFacade extends AbstractFacade<User> {
         return null;
     }
 
-    public List<User> getUsers() {
-        List<User> connectedUsers = connectedUsersFacade.getUsers();
-        return connectedUsers;
-    }
-
     public List<User> findConnectedUsers() {
         String requette = "Select u from User u where u.status = 1";
         System.out.println(requette);
@@ -66,7 +66,6 @@ public class UserFacade extends AbstractFacade<User> {
     public User deconnecter(User user) {
         user.setStatus(false);
         user.setIpAdress(null);
-        connectedUsersFacade.deconnect(user);
         edit(user);
         return null;
     }
@@ -94,16 +93,13 @@ public class UserFacade extends AbstractFacade<User> {
         return newUser;
     }
 
-    public Object[] seConnecter(User user) {
+    public Object[] seConnecter(User user) throws UnknownHostException {
         if (user == null || user.getUserName() == null) {
             //Veuilliez saisir votre login
             return new Object[]{-1, null};
         } else {
             User loadedUser = find(user.getUserName());
-            if (connectedUsersFacade.findByUser(loadedUser) != null) {
-                System.out.println("deja connectee !!");
-                return new Object[]{-6, null};
-            } else if (loadedUser == null) {
+            if (loadedUser == null) {
                 return new Object[]{-2, null};
             } else if (!loadedUser.getPassword().equals(HashageUtil.sha256(user.getPassword()))) {
                 if (loadedUser.getNbrCnx() < 3) {
@@ -122,26 +118,24 @@ public class UserFacade extends AbstractFacade<User> {
                 return new Object[]{-5, null};
             } else {
                 loadedUser.setNbrCnx(0);
+                loadedUser.setIpAdress(getLocalHostLANAddress().toString().substring(1));
                 loadedUser.setStatus(true);
                 edit(loadedUser);
                 user = clone(loadedUser);
                 user.setPassword(null);
-                connectedUsersFacade.connect(loadedUser);
                 return new Object[]{1, loadedUser};
             }
         }
     }
 
     public Object[] addUser(User user) {
-        if ("".equals(user.getUserName()) || user.getUserName() == null) {
-            return new Object[]{-1, null};
-        } else if ("".equals(user.getPassword()) || user.getPassword() == null) {
-            return new Object[]{-2, null};
-        }
         User loadedUser = find(user.getUserName());
         User loadedUserEmail = findByEmail(user.getEmail());
         if (loadedUser != null || loadedUserEmail != null) {
-            return new Object[]{-3, null};
+            if (loadedUser != null) {
+                return new Object[]{-1, null};
+            }
+            return new Object[]{-2, null};
         } else {
             user.setNbrCnx(0);
             user.setBlocked(0);
@@ -165,28 +159,33 @@ public class UserFacade extends AbstractFacade<User> {
         return null;
     }
 
-    public int sendPW(String email) {
-        User user = findByEmail(email);
-        if (user == null) {
+    public int sendPW(String userEmail) {
+        User loadedUser = find(userEmail);
+        User loadedUserEmail = findByEmail(userEmail);
+        if (loadedUser == null && loadedUserEmail == null) {
             return -1;
         } else {
+            if (loadedUser != null) {
+                userEmail = loadedUser.getEmail();
+                loadedUserEmail = loadedUser;
+            }
+            
             String pw = RandomStringUtil.generate();
-            String msg = "Bienvenu Mr. " + user.getNom() + ",<br/>"
-                    + "D'après votre demande de reinitialiser le mot de passe de votre compte ChatApp, nous avons genérer ce mot de passe pour vous.\n"
+            String msg = "Bienvenu Mr. " + loadedUserEmail.getNom() + ",<br/>"
+                    + "D'après votre demande de reinitialiser le mot de passe de votre compte TaxeSejour, nous avons generer ce mot de passe pour vous.\n"
                     + "<br/><br/>"
                     + "      Nouveau Mot de Passe: <br/><center><b>"
                     + pw
-                    + "</b></center><br/><br/><b><i>PS:</i></b>  SVP changer ce mot de passe apres que vous avez connecter pour des raisons du securité .<br/> Cree votre propre mot de passe";
+                    + "</b></center><br/><br/><b><i>PS:</i></b>  SVP changer ce mot de passe apres que vous avez connecter pour des raison du securité .<br/> Cree votre propre mot de passe";
             try {
-                EmailUtil.sendMail("pfetaxe@gmail.com", "taxeCommune", msg, email, "Demande de reanitialisation du mot de pass");
+                EmailUtil.sendMail("pfetaxe@gmail.com", "taxeCommune", msg, userEmail, "Demande de reanitialisation du mot de pass");
             } catch (MessagingException ex) {
-                //  Logger.getLogger(UserFacade.class.getName()).log(Level.SEVERE, null, ex);
                 return -2;
             }
 
-            user.setBlocked(0);
-            user.setPassword(HashageUtil.sha256(pw));
-            edit(user);
+            loadedUserEmail.setBlocked(0);
+            loadedUserEmail.setPassword(HashageUtil.sha256(pw));
+            edit(loadedUserEmail);
             return 1;
         }
     }
@@ -203,4 +202,44 @@ public class UserFacade extends AbstractFacade<User> {
         return clone;
     }
 
+    
+    private static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+        Enumeration ifaces;
+        try {
+            InetAddress candidateAddress = null;
+            // Iterate all NICs (network interface cards)...
+            for (ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+                NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+                // Iterate all IP addresses assigned to each card...
+                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+                    InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                    if (!inetAddr.isLoopbackAddress()) {
+
+                        if (inetAddr.isSiteLocalAddress()) {
+                            // Found non-loopback site-local address. Return it immediately...
+                            return inetAddr;
+                        }
+                        else if (candidateAddress == null) {
+                            candidateAddress = inetAddr;
+                        }
+                    }
+                }
+            }
+            if (candidateAddress != null) {
+                return candidateAddress;
+            }
+            InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
+            if (jdkSuppliedAddress == null) {
+                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
+            }
+            return jdkSuppliedAddress;
+        }
+        catch (SocketException | UnknownHostException e) {
+            UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address: " + e);
+            unknownHostException.initCause(e);
+            throw unknownHostException;
+        }
+    }
+
 }
+

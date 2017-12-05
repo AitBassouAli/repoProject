@@ -5,8 +5,8 @@
  */
 package chat.app.main;
 
-import bean.Pays;
 import bean.User;
+import chat.app.alerte.FXMLAlerteController;
 import chat.app.login.FXMLLoginController;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,34 +21,28 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import service.PaysFacade;
 import service.UserFacade;
 import util.DateUtil;
 import util.Session;
@@ -97,7 +91,7 @@ public class FXMLMainController implements Initializable {
     @FXML
     private JFXComboBox<String> sexeComboBox;
     @FXML
-    private JFXComboBox<Pays> paysComboBox;
+    private JFXComboBox<String> paysComboBox;
     @FXML
     private JFXTextField utilisateurTextField;
     @FXML
@@ -132,36 +126,25 @@ public class FXMLMainController implements Initializable {
     private double xOffset = 0;
     private double yOffset = 0;
     private UserFacade userFacade = new UserFacade();
-    private PaysFacade paysFacade = new PaysFacade();
     private User connectedUser = (User) Session.getAttribut("connectedUser");
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        new Thread(() -> {
-            while (connectedUser != null) {
-                try {
-                    initListView();
-                    System.out.println("initialisation ....");
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    System.out.println("interrupted");
-                }
-            }
-        }).start();
-        List<User> usersConnectee = userFacade.getUsers();
-        usersConnectee.remove(connectedUser);
+        List<User> usersConnectee = userFacade.findConnectedUsers();
+        // usersConnectee.remove(connectedUser);
         utilisateursListView.getItems().setAll(usersConnectee);
         // TODO
     }
 
-    public void initListView() {
-        List<User> usersConnectee = userFacade.getUsers();
-        usersConnectee.remove(connectedUser);
+    public void uinitList() {
+        List<User> usersConnectee = userFacade.findConnectedUsers();
+        // usersConnectee.remove(connectedUser);
         utilisateursListView.getItems().setAll(usersConnectee);
-        // TODO
     }
 
     @FXML
@@ -178,14 +161,9 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void parametresLabelOnMouseClicked(MouseEvent event) {
-        /*
-        hna ma tcklicki 3la parametre khas t3amar les text field likaynin f "parametresAnchorPane"
-        intilakan mn bd bhal Nom et Prenom et Email etc 3la hssab user lidkhil l app o t3amar
-        combobox d Sexe (masculin et feminin) et combobox dyal pays hadi njiboha mn base de donnes 
-        nkono deja 3amarna table d pays b les pays likaynin
-         */
         initConnectedUserInfos();
         parametresAnchorPane.toFront();
+        utilisateurTextField.setDisable(true);
         chatAppSecondAnchorPane.toFront();
     }
 
@@ -196,43 +174,30 @@ public class FXMLMainController implements Initializable {
         dateDeNaissanceDatePicker.setValue(connectedUser.getDateNaissance() == null ? LocalDate.now() : DateUtil.dateToLocalDate(connectedUser.getDateNaissance()));
         sexeComboBox.setItems(FXCollections.observableArrayList(Arrays.asList("Muscelin", "Fiminun")));
         sexeComboBox.getSelectionModel().select(connectedUser.getSexe());
-        paysComboBox.setItems(FXCollections.observableArrayList(paysFacade.findAll()));
-        paysComboBox.getSelectionModel().select(connectedUser.getPaye() == null ? paysComboBox.getItems().get(0) : connectedUser.getPaye());
+        paysComboBox.setItems(FXCollections.observableArrayList(Arrays.asList("maroc", "morroco")));
+        paysComboBox.getSelectionModel().select(0);
         utilisateurTextField.setText(connectedUser.getUserName() == null ? "" : connectedUser.getUserName());
-    }
-
-    private void deconnect() {
-        connectedUser = userFacade.deconnecter(connectedUser);
-        Session.setAttribut(null, "connectedUser");
     }
 
     @FXML
     private void deconnexionLabelOnMouseClicked(MouseEvent event) throws IOException {
 
-        /*
-        hada dyal Deconnexion hnaya utilisateur maycklicki 3la deconnexion khas status twili false
-        o IP iwili null o lcode likayn ltaht kayhiyad interface main okayaftah login
-         */
-        deconnect();
+        connectedUser = userFacade.deconnecter(connectedUser);
+        Session.setAttribut(null, "connectedUser");
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
         Parent root = (Parent) loader.load();
         FXMLLoginController loginController = loader.getController();
         Stage stageLogin = new Stage();
         stageLogin.initStyle(StageStyle.TRANSPARENT);
 
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
+        root.setOnMousePressed((MouseEvent event1) -> {
+            xOffset = event1.getSceneX();
+            yOffset = event1.getSceneY();
         });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                stageLogin.setX(event.getScreenX() - xOffset);
-                stageLogin.setY(event.getScreenY() - yOffset);
-            }
+        root.setOnMouseDragged((MouseEvent event1) -> {
+            stageLogin.setX(event1.getScreenX() - xOffset);
+            stageLogin.setY(event1.getScreenY() - yOffset);
         });
 
         Scene scene = new Scene(root);
@@ -249,31 +214,63 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void enregistrerButtonOnAction(ActionEvent event) throws ParseException {
-        /*
-        fhad button khas tkon enregistrer l ga3 les informations limodifya utilisateurs
-         */
+    private void enregistrerButtonOnAction(ActionEvent event) throws ParseException, IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/alerte/FXMLAlerte.fxml"));
+        Parent root = (Parent) loader.load();
+        FXMLAlerteController alerteController = loader.getController();
+        Stage stageAlerte = new Stage();
+        stageAlerte.initStyle(StageStyle.TRANSPARENT);
+
+        root.setOnMousePressed((MouseEvent event1) -> {
+            xOffset = event1.getSceneX();
+            yOffset = event1.getSceneY();
+        });
+        root.setOnMouseDragged((MouseEvent event1) -> {
+            stageAlerte.setX(event1.getScreenX() - xOffset);
+            stageAlerte.setY(event1.getScreenY() - yOffset);
+        });
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        stageAlerte.initModality(Modality.APPLICATION_MODAL);
+        stageAlerte.setScene(scene);
+        
         User user = getNewParams();
         if (conditionPermis(user)) {
             user = userFacade.modifier(user, connectedUser);
             if (user == null) {
-                DateUtil.alerter(Alert.AlertType.INFORMATION, null, null, "Email or Nom d'utilisateur deja prise !");
+                alerteController.erreurAnchorPane.toFront();
+                alerteController.erreurLabel.setText("Le nom d'utilisateur ou adresse e-mail existe déjà !");
+                stageAlerte.show();
             } else {
                 connectedUser = user;
-                initListView();
+                alerteController.succesAnchorPane.toFront();
+                alerteController.succesLabel.setText("Les modifications ont été appliquées");
+                stageAlerte.show();
                 utilisateursAnchorPane.toFront();
                 chatAppFirstAnchorPane.toFront();
                 rechercherTextField.requestFocus();
             }
 
         } else {
-            DateUtil.alerter(Alert.AlertType.INFORMATION, null, null, "Modefication non permise avec ces donnees !");
+            if (user.getUserName().equals("")) {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("Le nom d'utilisateur non valide !");
+                stageAlerte.show();
+            } else if (user.getEmail().equals("")) {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("L'adresse e-mail non valide !");
+                stageAlerte.show();
+            } else {
+                alerteController.attentionAnchorPane.toFront();
+                alerteController.attentionLabel.setText("Les deux mots de passe ne sont pas identiques !");
+                stageAlerte.show();
+            }
         }
     }
 
     @FXML
     private void AnnulerButtonOnAction(ActionEvent event) {
-        initListView();
         utilisateursAnchorPane.toFront();
         chatAppFirstAnchorPane.toFront();
         rechercherTextField.requestFocus();
@@ -289,7 +286,6 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void quitterButtonOnMouseClicked(MouseEvent event) {
-        deconnect();
         Platform.exit();
     }
 
@@ -321,14 +317,13 @@ public class FXMLMainController implements Initializable {
         user.setUserName(utilisateurTextField.getText());
         user.setDateNaissance(DateUtil.localDateToDate(dateDeNaissanceDatePicker.getValue()));
         user.setSexe("Muscelin".equals(sexeComboBox.getValue()) ? 0 : 1);
-        user.setPaye(paysComboBox.getValue());
         user.setPassword(motDePassePasswordField.getText());
         return user;
     }
 
     private boolean conditionPermis(User user) {
         if (!user.getPassword().equals("") && !confirmerMotDePassePasswordField.getText().equals("") && !user.getPassword().equals(confirmerMotDePassePasswordField.getText())) {
-            return false; //il faut confirmer le mot de passe
+            return false;
         } else {
             return !(user.getUserName().equals("") || user.getEmail().equals(""));
         }
@@ -478,11 +473,11 @@ public class FXMLMainController implements Initializable {
         this.sexeComboBox = sexeComboBox;
     }
 
-    public JFXComboBox<Pays> getPaysComboBox() {
+    public JFXComboBox<String> getPaysComboBox() {
         return paysComboBox;
     }
 
-    public void setPaysComboBox(JFXComboBox<Pays> paysComboBox) {
+    public void setPaysComboBox(JFXComboBox<String> paysComboBox) {
         this.paysComboBox = paysComboBox;
     }
 
