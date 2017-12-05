@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="889.0" style="-fx-background-color: 0,100,0;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.app.login.FXMLLoginController">
+   <children>
+      <AnchorPane layoutY="47.0" prefHeight="456.0" prefWidth="889.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+         <children>
+            <JFXButton fx:id="seConnecterButton" layoutY="233.0" onAction="#seConnecterButtonOnAction" prefHeight="43.0" prefWidth="128.0" ripplerFill="#6677e3" text="Se connecter" textFill="#4d4d4d">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+            <JFXButton fx:id="inscrireButton" layoutY="190.0" onAction="#inscrireButtonOnAction" prefHeight="43.0" prefWidth="128.0" ripplerFill="#6677e3" text="S'inscrire" textFill="#4d4d4d">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+            <AnchorPane fx:id="motDePasseOublieAnchorPane" layoutX="502.0" layoutY="3.0" prefHeight="456.0" prefWidth="379.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <JFXButton fx:id="motDePasseOublieLoginButton" contentDisplay="GRAPHIC_ONLY" layoutX="168.0" layoutY="366.0" onAction="#motDePasseOublieLoginButtonOnAction" prefHeight="36.0" prefWidth="48.0" ripplerFill="#f3f3f3">
+                     <graphic>
+                        <FontAwesomeIconView fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" size="40" />
+                     </graphic>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </JFXButton>
+                  <JFXTextField fx:id="utilisateurMotDePasseOublieTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXTextField>
+                  <Label layoutX="71.0" layoutY="43.0" text="Mot de passe oublié ?" textFill="#1976d2">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <FontAwesomeIconView fx:id="quitterMotDePasseOublieButton" fill="#1976d2" glyphName="TIMES_CIRCLE" layoutX="363.0" layoutY="20.0" onMouseClicked="#quitterMotDePasseOublieButtonOnMouseClicked" size="20" />
+                  <FontAwesomeIconView fx:id="minimiserMotDePasseOublieButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="341.0" layoutY="20.0" onMouseClicked="#minimiserMotDePasseOublieButtonOnMouseClicked" size="20" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="inscrireAnchorPane" layoutX="502.0" layoutY="3.0" prefHeight="456.0" prefWidth="379.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <JFXButton fx:id="inscrireLoginButton" contentDisplay="GRAPHIC_ONLY" layoutX="168.0" layoutY="366.0" onAction="#inscrireLoginButtonOnAction" prefHeight="36.0" prefWidth="48.0" ripplerFill="#f3f3f3">
+                     <graphic>
+                        <FontAwesomeIconView fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" size="40" />
+                     </graphic>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </JFXButton>
+                  <JFXTextField fx:id="utilisateurInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="136.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXPasswordField fx:id="motDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="242.0" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXPasswordField>
+                  <JFXTextField fx:id="emailInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="E-mail">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXPasswordField fx:id="confirmerMotDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="295.0" prefHeight="25.0" prefWidth="250.0" promptText="Confirmer le mot de passe">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXPasswordField>
+                  <Label layoutX="142.0" layoutY="43.0" text="S'inscrire" textFill="#1976d2">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <FontAwesomeIconView fx:id="quitterInscrireButton" fill="#1976d2" glyphName="TIMES_CIRCLE" layoutX="363.0" layoutY="20.0" onMouseClicked="#quitterInscrireButtonOnMouseClicked" size="20" />
+                  <FontAwesomeIconView fx:id="minimiserInscrireButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="341.0" layoutY="20.0" onMouseClicked="#minimiserInscrireButtonOnMouseClicked" size="20" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="seConnecterAnchorPane" layoutX="502.0" layoutY="3.0" prefHeight="456.0" prefWidth="379.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <JFXButton fx:id="seConnecterLoginButton" contentDisplay="GRAPHIC_ONLY" layoutX="168.0" layoutY="366.0" onAction="#seConnecterLoginButtonOnAction" prefHeight="36.0" prefWidth="48.0" ripplerFill="#f3f3f3">
+                     <graphic>
+                        <FontAwesomeIconView fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" size="40" />
+                     </graphic>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </JFXButton>
+                  <JFXTextField fx:id="utilisateurSeConnecterTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXPasswordField fx:id="motDePasseSeConnecterPasswordField" labelFloat="true" layoutX="68.0" layoutY="242.0" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </JFXPasswordField>
+                  <Label layoutX="121.0" layoutY="43.0" text="Se connecter" textFill="#1976d2">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="motDePasseOublieLabel" layoutX="68.0" layoutY="278.0" onMouseClicked="#motDePasseOublieLabelOnMouseClicked" text="Mot de passe oublié ?" textFill="#1976d2">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+                  <FontAwesomeIconView fx:id="quitterLoginButton" fill="#1976d2" glyphName="TIMES_CIRCLE" layoutX="363.0" layoutY="20.0" onMouseClicked="#quitterLoginButtonOnMouseClicked" size="20" />
+                  <FontAwesomeIconView fx:id="minimiserLoginButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="341.0" layoutY="20.0" onMouseClicked="#minimiserLoginButtonOnMouseClicked" size="20" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="128.0" prefHeight="559.0" prefWidth="375.0" style="-fx-background-color: #1976D2; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+         <children>
+            <Label layoutX="74.0" layoutY="312.0" text="Bienvenue à ChatApp" textFill="#f3f3f3">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="525.0" text="Faculté  des Sciences Tétouan | Master QL" textFill="#f3f3f3">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <FontAwesomeIconView fill="#f3f3f3" glyphName="XING" layoutX="156.0" layoutY="271.0" size="80" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

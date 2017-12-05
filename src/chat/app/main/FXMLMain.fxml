@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import java.net.URL?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="550.0" prefWidth="1000.0" style="-fx-background-color: 0,100,0;" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.app.main.FXMLMainController">
+    <stylesheets>
+        <URL value="@fxmlmain.css" />
+    </stylesheets>
+   <children>
+      <AnchorPane layoutY="47.0" prefHeight="456.0" prefWidth="1000.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+         <children>
+            <AnchorPane fx:id="profilUtilisateurAnchorPane" layoutX="800.0" layoutY="3.0" prefHeight="456.0" prefWidth="194.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <MaterialDesignIconView fx:id="imageProfilUtilisateurIconView" accessibleRole="IMAGE_VIEW" fill="#1976d2" glyphName="ACCOUNT_CIRCLE" layoutX="49.0" layoutY="214.0" size="100" textAlignment="CENTER" />
+                  <ImageView fx:id="imageProfilUtilisateurImageView" fitHeight="100.0" fitWidth="100.0" layoutX="50.0" layoutY="127.0" onMouseClicked="#imageProfilUtilisateurImageViewOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ImageView>
+                  <Label fx:id="utilisateurLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="5.0" layoutY="235.0" onMouseClicked="#motDePasseOublieLabelOnMouseClicked" prefHeight="25.0" prefWidth="188.0" text="User Name" textAlignment="CENTER" textFill="#1976d2">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="parametresLabel" layoutX="67.0" layoutY="283.0" onMouseClicked="#parametresLabelOnMouseClicked" text="Paramètres" textFill="#4d4d4d">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="deconnexionLabel" layoutX="62.0" layoutY="311.0" onMouseClicked="#deconnexionLabelOnMouseClicked" text="Déconnexion" textFill="#4d4d4d">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <FontAwesomeIconView fx:id="quitterButton" fill="#1976d2" glyphName="TIMES_CIRCLE" layoutX="176.0" layoutY="20.0" onMouseClicked="#quitterButtonOnMouseClicked" size="20" />
+                  <FontAwesomeIconView fx:id="minimiserButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="154.0" layoutY="20.0" onMouseClicked="#minimiserButtonOnMouseClicked" size="20" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="utilisateursAnchorPane" layoutX="3.0" layoutY="3.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;">
+               <children>
+                  <AnchorPane fx:id="utilisateurs" prefHeight="37.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;">
+                     <children>
+                        <FontAwesomeIconView fx:id="minimiserLoginButton" fill="#4d4d4d" glyphName="SEARCH" layoutX="5.0" layoutY="25.0" onMouseClicked="#minimiserLoginButtonOnMouseClicked" size="20" />
+                        <JFXTextField fx:id="rechercherTextField" focusColor="#1976d2" layoutX="31.0" layoutY="6.0" onKeyPressed="#rechercherTextFieldOnKeyPressed" prefHeight="25.0" prefWidth="198.0" promptText="Rechercher">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextField>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutY="41.0" prefHeight="415.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;">
+                     <children>
+                        <JFXListView fx:id="utilisateursListView" focusTraversable="false" onMouseClicked="#utilisateursListViewOnMouseClicked" prefHeight="415.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="chatAppSecondAnchorPane" layoutX="3.0" layoutY="3.0" prefHeight="456.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <FontAwesomeIconView fill="#1976d2" glyphName="XING" layoutX="88.0" layoutY="256.0" size="80" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="242.0">
+         <children>
+            <AnchorPane fx:id="messagesAnchorPane" prefHeight="559.0" prefWidth="558.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <AnchorPane layoutX="6.0" layoutY="6.0" prefHeight="37.0" prefWidth="547.0" style="-fx-background-color: #F3F3F3;">
+                     <children>
+                        <FontAwesomeIconView fx:id="parametresConversationIconView" fill="#1976d2" glyphName="ELLIPSIS_V" layoutX="530.0" layoutY="26.0" size="25">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </FontAwesomeIconView>
+                        <Label fx:id="motDePasseOublieLabel12" layoutX="11.0" layoutY="9.0" onMouseClicked="#motDePasseOublieLabelOnMouseClicked" text="Date de création :" textFill="#4d4d4d">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="dateDeCreationConversationLabel" layoutX="115.0" layoutY="9.0" onMouseClicked="#motDePasseOublieLabelOnMouseClicked" text="Date" textFill="#4d4d4d">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <Line endX="422.0" layoutX="118.0" layoutY="43.0" startX="-100.0" stroke="#4d4d4d" />
+                  <AnchorPane layoutX="6.0" layoutY="505.0" prefHeight="48.0" prefWidth="547.0" style="-fx-background-color: #F3F3F3;">
+                     <children>
+                        <JFXTextArea fx:id="messageAEnvoyerTextArea" focusColor="#1976d2" layoutX="10.0" layoutY="8.0" prefHeight="32.0" prefWidth="484.0" promptText="Écrivez un message..." style="-fx-background-color: #F3F3F3;">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </JFXTextArea>
+                        <FontAwesomeIconView fx:id="envoyerMessageIconView" fill="#1976d2" glyphName="CHEVRON_CIRCLE_RIGHT" layoutX="503.0" layoutY="36.0" onMouseClicked="#envoyerMessageIconViewOnMouseClicked" size="35">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </FontAwesomeIconView>
+                     </children>
+                  </AnchorPane>
+                  <TextArea fx:id="messagesTextArea" editable="false" focusTraversable="false" layoutX="18.0" layoutY="53.0" prefHeight="443.0" prefWidth="523.0" style="-fx-border-color: #4d4d4d; -fx-border-radius: 5;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </TextArea>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="parametresAnchorPane" prefHeight="559.0" prefWidth="558.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976D2; -fx-border-width: 3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="Détails de base" textFill="#1976d2">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <JFXTextField fx:id="nomTextField" focusColor="#1976d2" labelFloat="true" layoutX="82.0" layoutY="85.0" prefHeight="25.0" prefWidth="170.0" promptText="Nom" />
+                  <JFXTextField fx:id="prenomTextField" focusColor="#1976d2" labelFloat="true" layoutX="306.0" layoutY="85.0" prefHeight="25.0" prefWidth="170.0" promptText="Prénom" />
+                  <JFXTextField fx:id="emailTextField" focusColor="#1976d2" labelFloat="true" layoutX="82.0" layoutY="138.0" prefHeight="25.0" prefWidth="170.0" promptText="E-mail" />
+                  <JFXDatePicker fx:id="dateDeNaissanceDatePicker" defaultColor="#1976d2" layoutX="306.0" layoutY="138.0" prefHeight="25.0" prefWidth="170.0" promptText="Date de naissance" />
+                  <JFXComboBox fx:id="sexeComboBox" focusColor="#1976d2" labelFloat="true" layoutX="82.0" layoutY="191.0" prefHeight="25.0" prefWidth="170.0" promptText="Sexe" />
+                  <JFXComboBox fx:id="paysComboBox" focusColor="#1976d2" labelFloat="true" layoutX="306.0" layoutY="191.0" prefHeight="25.0" prefWidth="170.0" promptText="Pays" />
+                  <Label layoutX="15.0" layoutY="265.0" text="Sécurité et connexion" textFill="#1976d2">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <JFXTextField fx:id="utilisateurTextField" focusColor="#1976d2" labelFloat="true" layoutX="82.0" layoutY="336.0" prefHeight="25.0" prefWidth="170.0" promptText="Utilisateur" />
+                  <JFXPasswordField fx:id="motDePassePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="82.0" layoutY="389.0" prefHeight="25.0" prefWidth="170.0" promptText="Nouveau mot de passe" />
+                  <JFXPasswordField fx:id="confirmerMotDePassePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="306.0" layoutY="389.0" prefHeight="25.0" prefWidth="170.0" promptText="Confirmer le mot de passe" />
+                  <JFXButton fx:id="enregistrerButton" layoutX="296.0" layoutY="469.0" onAction="#enregistrerButtonOnAction" prefHeight="35.0" prefWidth="119.0" style="-fx-background-color: #1976d2; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Enregistrer" textFill="#f3f3f3" />
+                  <JFXButton fx:id="AnnulerButton" layoutX="143.0" layoutY="469.0" onAction="#AnnulerButtonOnAction" prefHeight="35.0" prefWidth="119.0" style="-fx-background-color: #F3F3F3; -fx-border-color: #1976d2; -fx-background-radius: 2em; -fx-border-radius: 2em;" text="Annuler" textFill="#1976d2" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="chatAppFirstAnchorPane" prefHeight="559.0" prefWidth="558.0" style="-fx-background-color: #1976D2; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <Label layoutX="14.0" layoutY="525.0" text="Faculté  des Sciences Tétouan | Master QL" textFill="#f3f3f3">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <FontAwesomeIconView fill="#f3f3f3" glyphName="XING" layoutX="248.0" layoutY="307.0" size="80" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
