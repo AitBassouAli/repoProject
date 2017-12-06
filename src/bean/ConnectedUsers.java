@@ -28,6 +28,7 @@ public class ConnectedUsers implements Serializable {
     @OneToOne
     private User user;
     private int port;
+    private String ip;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date dateConnection;
 
@@ -61,6 +62,14 @@ public class ConnectedUsers implements Serializable {
 
     public void setDateConnection(Date dateConnection) {
         this.dateConnection = dateConnection;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     @Override

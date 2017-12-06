@@ -38,28 +38,29 @@ public class FXMLConnexionController implements Initializable {
     private JFXButton connexionButton;
     @FXML
     private JFXButton AnnulerButton;
-    
+
     private double xOffset = 0;
     private double yOffset = 0;
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
 
     @FXML
     private void connexionButtonOnAction(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
         Parent root = (Parent) loader.load();
         FXMLLoginController loginController = loader.getController();
-        Stage stageLogin = new Stage();
+        Stage stageLogin = Connexion.getIconToStage(new Stage());
         stageLogin.initStyle(StageStyle.TRANSPARENT);
-        
+
         root.setOnMousePressed((MouseEvent event1) -> {
             xOffset = event1.getSceneX();
             yOffset = event1.getSceneY();
@@ -68,7 +69,7 @@ public class FXMLConnexionController implements Initializable {
             stageLogin.setX(event1.getScreenX() - xOffset);
             stageLogin.setY(event1.getScreenY() - yOffset);
         });
-        
+
         Scene scene = new Scene(root);
         scene.setFill(Color.TRANSPARENT);
         stageLogin.setScene(scene);
@@ -82,5 +83,5 @@ public class FXMLConnexionController implements Initializable {
     private void annulerButtonOnAction(ActionEvent event) {
         Platform.exit();
     }
-    
+
 }

@@ -8,7 +8,9 @@ package chat.app.main;
 import bean.Pays;
 import bean.User;
 import chat.app.alerte.FXMLAlerteController;
+import chat.app.connexion.Connexion;
 import chat.app.login.FXMLLoginController;
+import clientServices.ClientMT;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -18,13 +20,18 @@ import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -44,6 +51,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import service.ConnectedUsersFacade;
 import service.PaysFacade;
 import service.UserFacade;
 import util.DateUtil;
@@ -129,7 +137,9 @@ public class FXMLMainController implements Initializable {
     private double yOffset = 0;
     private UserFacade userFacade = new UserFacade();
     private PaysFacade paysFacade = new PaysFacade();
+    private ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
     private User connectedUser = (User) Session.getAttribut("connectedUser");
+    private User selectedUser;
 
     /**
      * Initializes the controller class.
@@ -139,11 +149,11 @@ public class FXMLMainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        refreshMeassagesTextArea();
         new Thread(() -> {
             while (connectedUser != null) {
                 try {
                     initListView();
-                    System.out.println("initialisation ....");
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {
                     System.out.println("interrupted");
@@ -156,9 +166,12 @@ public class FXMLMainController implements Initializable {
     }
 
     public void initListView() {
-        List<User> usersConnectee = userFacade.getUsers();
-        usersConnectee.remove(connectedUser);
-        utilisateursListView.getItems().setAll(usersConnectee);
+        try {
+            List<User> usersConnectee = userFacade.getUsers();
+            usersConnectee.remove(connectedUser);
+            utilisateursListView.getItems().setAll(usersConnectee);
+        } catch (Exception e) {
+        }
     }
 
     @FXML
@@ -206,7 +219,7 @@ public class FXMLMainController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
         Parent root = (Parent) loader.load();
         FXMLLoginController loginController = loader.getController();
-        Stage stageLogin = new Stage();
+        Stage stageLogin = Connexion.getIconToStage(new Stage());
         stageLogin.initStyle(StageStyle.TRANSPARENT);
 
         root.setOnMousePressed((MouseEvent event1) -> {
@@ -295,11 +308,38 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void envoyerMessageIconViewOnMouseClicked(MouseEvent event) {
+    private void envoyerMessageIconViewOnMouseClicked(MouseEvent event) throws IOException {
         /*
         hhhhhh hna likayn lkhadma had button howa lighaysift email l user 2 
         ya3ni les socket etc hhh
          */
+        String msg = messageAEnvoyerTextArea.getText();
+        messageAEnvoyerTextArea.setText("");
+        User userDist = selectedUser;
+        if (userDist == null || userDist.getId() == null) {
+            System.out.println("00000");
+            userDist = utilisateursListView.getItems().get(0);
+        }
+        messagesTextArea.applyCss();
+        messagesTextArea.appendText("Vous  : " + msg + "\n");
+        connectedUsersFacade.envoyer(connectedUser, userDist, msg);
+    }
+
+    public void refreshMeassagesTextArea() {
+        new Thread(() -> {
+            while (connectedUser != null) {
+                try {
+                    String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
+                    User user = userFacade.find(new Long(msg[0]));
+                    messagesTextArea.appendText(user.getUserName() + " : " + msg[1] + "\n");
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    System.out.println("interrupted");
+                } catch (IOException ex) {
+                    Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
     }
 
     @FXML
@@ -316,7 +356,10 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void utilisateursListViewOnMouseClicked(MouseEvent event) {
-        messagesAnchorPane.toFront();
+        selectedUser = utilisateursListView.getSelectionModel().getSelectedItem();
+        if (selectedUser != null || selectedUser.getId() == null) {
+            messagesAnchorPane.toFront();
+        }
     }
 
     @FXML

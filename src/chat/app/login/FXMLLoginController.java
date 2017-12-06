@@ -7,6 +7,7 @@ package chat.app.login;
 
 import bean.User;
 import chat.app.alerte.FXMLAlerteController;
+import chat.app.connexion.Connexion;
 import chat.app.main.FXMLMainController;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
@@ -278,7 +279,7 @@ public class FXMLLoginController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/main/FXMLMain.fxml"));
                 Parent root = (Parent) loader.load();
                 FXMLMainController mainController = loader.getController();
-                Stage stageMain = new Stage();
+                Stage stageMain = Connexion.getIconToStage(new Stage());
                 stageMain.initStyle(StageStyle.TRANSPARENT);
 
                 root.setOnMousePressed((MouseEvent event1) -> {

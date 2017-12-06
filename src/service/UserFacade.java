@@ -6,6 +6,7 @@
 package service;
 
 import bean.User;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -98,7 +99,7 @@ public class UserFacade extends AbstractFacade<User> {
         return newUser;
     }
 
-    public Object[] seConnecter(User user) throws UnknownHostException {
+    public Object[] seConnecter(User user) throws UnknownHostException, IOException {
         if (user == null || user.getUserName() == null) {
             //Veuilliez saisir votre login
             return new Object[]{-1, null};
