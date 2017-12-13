@@ -5,6 +5,7 @@
  */
 package chat.app.connexion;
 
+import clientServices.ClientMT;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +48,9 @@ public class Connexion extends Application {
         stage.setScene(scene);
         connexionController.adresseDuServeurTextField.requestFocus();
         stage.show();
+
+        ClientMT clientMT = new ClientMT();
+        clientMT.beforConnection();
     }
 
     public static Stage getIconToStage(Stage stage) {

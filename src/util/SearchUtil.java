@@ -5,7 +5,6 @@ package util;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import static util.SearchUtil.decimalFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

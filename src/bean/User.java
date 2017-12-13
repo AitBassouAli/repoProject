@@ -7,23 +7,15 @@ package bean;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
+import java.util.Objects;
 
 /**
  *
  * @author HP
  */
-@Entity
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String password;
@@ -31,15 +23,12 @@ public class User implements Serializable {
     private String nom;
     private String prenom;
     private String ipAdress;
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date dateCreation;
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date dateNaissance;
     private int sexe;
     private int nbrCnx;
     private int blocked;
     private boolean status;
-    @ManyToOne
     private Pays paye;
 
     public User() {
@@ -54,6 +43,10 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.userName = userName;
+    }
+
+    public User(String email) {
+        this.email = email;
     }
 
     public Long getId() {
@@ -170,19 +163,24 @@ public class User implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 5;
+        hash = 83 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        User other = (User) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         return true;
