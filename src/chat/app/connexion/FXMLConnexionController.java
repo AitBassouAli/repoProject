@@ -5,7 +5,9 @@
  */
 package chat.app.connexion;
 
+import chat.app.alerte.FXMLAlerteController;
 import chat.app.login.FXMLLoginController;
+import clientServices.ClientMT;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -55,28 +58,56 @@ public class FXMLConnexionController implements Initializable {
 
     @FXML
     private void connexionButtonOnAction(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
-        Parent root = (Parent) loader.load();
-        FXMLLoginController loginController = loader.getController();
-        Stage stageLogin = Connexion.getIconToStage(new Stage());
-        stageLogin.initStyle(StageStyle.TRANSPARENT);
+        FXMLLoader loaderAlerte = new FXMLLoader(getClass().getResource("/chat/app/alerte/FXMLAlerte.fxml"));
+        Parent rootAlerte = (Parent) loaderAlerte.load();
+        FXMLAlerteController alerteController = loaderAlerte.getController();
+        Stage stageAlerte = new Stage();
+        stageAlerte.initStyle(StageStyle.TRANSPARENT);
 
-        root.setOnMousePressed((MouseEvent event1) -> {
+        rootAlerte.setOnMousePressed((MouseEvent event1) -> {
             xOffset = event1.getSceneX();
             yOffset = event1.getSceneY();
         });
-        root.setOnMouseDragged((MouseEvent event1) -> {
-            stageLogin.setX(event1.getScreenX() - xOffset);
-            stageLogin.setY(event1.getScreenY() - yOffset);
+        rootAlerte.setOnMouseDragged((MouseEvent event1) -> {
+            stageAlerte.setX(event1.getScreenX() - xOffset);
+            stageAlerte.setY(event1.getScreenY() - yOffset);
         });
 
-        Scene scene = new Scene(root);
-        scene.setFill(Color.TRANSPARENT);
-        stageLogin.setScene(scene);
-        ((Stage) connexionButton.getScene().getWindow()).close();
-        loginController.seConnecterAnchorPane.toFront();
-        loginController.utilisateurSeConnecterTextField.requestFocus();
-        stageLogin.show();
+        try {
+            ClientMT clientMT = new ClientMT();
+            clientMT.beforConnection();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
+            Parent root = (Parent) loader.load();
+            FXMLLoginController loginController = loader.getController();
+            Stage stageLogin = Connexion.getIconToStage(new Stage());
+            stageLogin.initStyle(StageStyle.TRANSPARENT);
+
+            root.setOnMousePressed((MouseEvent event1) -> {
+                xOffset = event1.getSceneX();
+                yOffset = event1.getSceneY();
+            });
+            root.setOnMouseDragged((MouseEvent event1) -> {
+                stageLogin.setX(event1.getScreenX() - xOffset);
+                stageLogin.setY(event1.getScreenY() - yOffset);
+            });
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            stageLogin.setScene(scene);
+            ((Stage) connexionButton.getScene().getWindow()).close();
+            loginController.seConnecterAnchorPane.toFront();
+            loginController.utilisateurSeConnecterTextField.requestFocus();
+            stageLogin.show();
+        } catch (Exception e) {
+            Scene scene = new Scene(rootAlerte);
+            scene.setFill(Color.TRANSPARENT);
+            stageAlerte.initModality(Modality.APPLICATION_MODAL);
+            stageAlerte.setScene(scene);
+
+            alerteController.erreurAnchorPane.toFront();
+            alerteController.erreurLabel.setText("Impossible de se connecter au serveur !");
+            stageAlerte.show();
+        }
     }
 
     @FXML

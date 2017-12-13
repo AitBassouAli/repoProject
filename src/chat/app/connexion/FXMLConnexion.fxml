@@ -27,12 +27,7 @@
             <AnchorPane layoutY="40.0" prefHeight="10.0" prefWidth="289.0" style="-fx-background-color: #1976D2;" />
          </children>
       </AnchorPane>
-      <JFXTextField fx:id="adresseDuServeurTextField" alignment="CENTER" focusColor="#1976d2" labelFloat="true" layoutX="29.0" layoutY="75.0" prefHeight="25.0" prefWidth="231.0" promptText="Adresse du serveur">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font>
-      </JFXTextField>
-      <JFXTextField fx:id="portTextField" alignment="CENTER" focusColor="#1976d2" labelFloat="true" layoutX="29.0" layoutY="122.0" prefHeight="25.0" prefWidth="231.0" promptText="Port">
+      <JFXTextField fx:id="adresseDuServeurTextField" alignment="CENTER" focusColor="#1976d2" labelFloat="true" layoutX="29.0" layoutY="99.0" prefHeight="25.0" prefWidth="231.0" promptText="Adresse du serveur">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

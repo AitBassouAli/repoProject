@@ -48,9 +48,6 @@ public class Connexion extends Application {
         stage.setScene(scene);
         connexionController.adresseDuServeurTextField.requestFocus();
         stage.show();
-
-        ClientMT clientMT = new ClientMT();
-        clientMT.beforConnection();
     }
 
     public static Stage getIconToStage(Stage stage) {

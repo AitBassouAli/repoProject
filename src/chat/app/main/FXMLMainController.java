@@ -42,6 +42,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -115,9 +116,7 @@ public class FXMLMainController implements Initializable {
     private AnchorPane messagesAnchorPane;
     @FXML
     private FontAwesomeIconView parametresConversationIconView;
-    @FXML
     private Label motDePasseOublieLabel12;
-    @FXML
     private Label dateDeCreationConversationLabel;
     @FXML
     private JFXTextArea messageAEnvoyerTextArea;
@@ -139,6 +138,8 @@ public class FXMLMainController implements Initializable {
     private ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
     private User connectedUser = (User) Session.getAttribut("connectedUser");
     private User selectedUser;
+    @FXML
+    private JFXListView<?> conversationsListView;
 
     /**
      * Initializes the controller class.
@@ -183,10 +184,7 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void imageProfilUtilisateurImageViewOnMouseClicked(MouseEvent event) {
-        /*
-        hna maykliki user hnaya khas i3tih ibadal photo dyalo maybadal khas taficha f "imageProfilUtilisateurImageView"
-        o en meme temp tsajal f bd
-         */
+
     }
 
     @FXML
@@ -316,10 +314,6 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void envoyerMessageIconViewOnMouseClicked(MouseEvent event) throws IOException {
-        /*
-        hhhhhh hna likayn lkhadma had button howa lighaysift email l user 2 
-        ya3ni les socket etc hhh
-         */
         String msg = messageAEnvoyerTextArea.getText();
         messageAEnvoyerTextArea.setText("");
         User userDist = selectedUser;
@@ -372,10 +366,7 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void rechercherTextFieldOnKeyPressed(KeyEvent event) {
-        /*
-        hnaya ghaykon filtrage dyal les utilisateurs limconnectin fokach ma ktib user
-        ghatabda ListView taffichier les utilisateur likaybdaw bdackchi liktab utilisateur
-         */
+
     }
 
     private User getNewParams() throws ParseException {
@@ -702,6 +693,18 @@ public class FXMLMainController implements Initializable {
 
     public void setConnectedUser(User connectedUser) {
         this.connectedUser = connectedUser;
+    }
+
+    @FXML
+    private void conversationsListViewOnMouseClicked(MouseEvent event) {
+    }
+
+    @FXML
+    private void messageAEnvoyerTextAreaOnKeyPressed(KeyEvent event) throws IOException {
+        if (event.getCode().equals(KeyCode.ENTER))
+        {
+            envoyerMessageIconViewOnMouseClicked(null);
+        }
     }
 
 }
