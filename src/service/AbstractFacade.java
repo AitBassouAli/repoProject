@@ -5,87 +5,49 @@
  */
 package service;
 
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import bean.UserService;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import util.Session;
 
 /**
  *
  * @author HP
  */
-public class AbstractFacade<T> {
+public class AbstractFacade {
 
-    private static final String PERSISTENCE_UNIT_NAME = "chatAppPU";
-    private Class<T> entityClass;
-    private EntityManager em;
-
-    public AbstractFacade(Class<T> entityClass) {
-        this.entityClass = entityClass;
-    }
-
-    protected EntityManager getEntityManager() {
-        if (em == null) {
-            EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-            em = entityManagerFactory.createEntityManager();
+    public void writeObject(UserService userService) throws IOException {
+        Socket socket = (Socket) Session.getAttribut("connectedServiceSocket");
+        if (socket != null) {
+            userService.setPort(socket.getLocalPort());
+            ObjectOutputStream outObject = new ObjectOutputStream(socket.getOutputStream());
+            outObject.writeObject(userService);
+            outObject.flush();
+            System.out.println("sendiiing a request");
+        } else {
+            System.out.println("****** socket est null *******");
         }
-        return em;
     }
 
-    public void create(T entity) {
-        getEntityManager().getTransaction().begin();
-        getEntityManager().persist(entity);
-        getEntityManager().getTransaction().commit();
+    public UserService getService() throws IOException, ClassNotFoundException {
+        Socket socket = (Socket) Session.getAttribut("connectedServiceSocket");
+        ObjectInputStream inOpject = new ObjectInputStream(socket.getInputStream());
+        UserService service = (UserService) inOpject.readObject();
+        System.out.println(service);
+        return service;
     }
 
-    public void edit(T entity) {
-        getEntityManager().getTransaction().begin();
-        getEntityManager().merge(entity);
-        getEntityManager().getTransaction().commit();
-
-    }
-
-    public void remove(T entity) {
-        getEntityManager().getTransaction().begin();
-        getEntityManager().remove(getEntityManager().merge(entity));
-        getEntityManager().getTransaction().commit();
-    }
-
-    public T find(Object id) {
-        return getEntityManager().find(entityClass, id);
-    }
-
-    public Long generateId(String beanName, String idName) {
-        List<Long> maxId = getEntityManager().createQuery(" Select max(item." + idName + ") FROM " + beanName + " item").getResultList();
-        if (maxId == null || maxId.isEmpty() || maxId.get(0) == null) {
-            return 1L;
+    public UserService doExecute(UserService userService) throws IOException {
+        writeObject(userService);
+        try {
+            UserService service = getService();
+            System.out.println("returning from doExecute  => " + service);
+            return service;
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("do execute Client catchs an error"+e.getLocalizedMessage());
+            return null;
         }
-        return maxId.get(0) + 1;
     }
-
-    public List<T> findAll() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
-    }
-
-    public List<T> findRange(int[] range) {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
-        q.setMaxResults(range[1] - range[0] + 1);
-        q.setFirstResult(range[0]);
-        return q.getResultList();
-    }
-
-    public int count() {
-        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        javax.persistence.criteria.Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        javax.persistence.Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
-    }
-
 }
-
-

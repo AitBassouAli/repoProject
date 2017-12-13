@@ -5,6 +5,7 @@
  */
 package chat.app.main;
 
+import bean.Message;
 import bean.Pays;
 import bean.User;
 import chat.app.alerte.FXMLAlerteController;
@@ -20,8 +21,6 @@ import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -149,20 +148,28 @@ public class FXMLMainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        refreshMeassagesTextArea();
-        new Thread(() -> {
-            while (connectedUser != null) {
-                try {
-                    initListView();
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    System.out.println("interrupted");
+        try {
+            refreshMeassagesTextArea();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (connectedUser != null) {
+                        try {
+                            Thread.sleep(5000);
+                            initListView();
+                            Thread.sleep(5000);
+                        } catch (InterruptedException ex) {
+                            System.out.println("interrupted");
+                        }
+                    }
                 }
-            }
-        }).start();
-        List<User> usersConnectee = userFacade.getUsers();
-        usersConnectee.remove(connectedUser);
-        utilisateursListView.getItems().setAll(usersConnectee);
+            }).start();
+            List<User> usersConnectee = userFacade.getUsers();
+            usersConnectee.remove(connectedUser);
+            utilisateursListView.getItems().setAll(usersConnectee);
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void initListView() {
@@ -187,14 +194,14 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void parametresLabelOnMouseClicked(MouseEvent event) {
+    private void parametresLabelOnMouseClicked(MouseEvent event) throws IOException {
         initConnectedUserInfos();
         parametresAnchorPane.toFront();
         utilisateurTextField.setDisable(true);
         chatAppSecondAnchorPane.toFront();
     }
 
-    private void initConnectedUserInfos() {
+    private void initConnectedUserInfos() throws IOException {
         nomTextField.setText(connectedUser.getNom() == null ? "" : connectedUser.getNom());
         prenomTextField.setText(connectedUser.getPrenom() == null ? "" : connectedUser.getPrenom());
         emailTextField.setText(connectedUser.getEmail() == null ? "" : connectedUser.getEmail());
@@ -206,7 +213,7 @@ public class FXMLMainController implements Initializable {
         utilisateurTextField.setText(connectedUser.getUserName() == null ? "" : connectedUser.getUserName());
     }
 
-    private void deconnect() {
+    private void deconnect() throws IOException {
         connectedUser = userFacade.deconnecter(connectedUser);
         Session.setAttribut(null, "connectedUser");
     }
@@ -329,13 +336,13 @@ public class FXMLMainController implements Initializable {
         new Thread(() -> {
             while (connectedUser != null) {
                 try {
-                    String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
-                    User user = userFacade.find(new Long(msg[0]));
-                    messagesTextArea.appendText(user.getUserName() + " : " + msg[1] + "\n");
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                    System.out.println("interrupted");
-                } catch (IOException ex) {
+                    // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
+                    Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
+                    System.out.println("find from refreshMeassagesTextArea methode");
+                    User user = userFacade.find(message.getSender());
+                    String mesg = message.getMessage();
+                    messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
+                } catch (IOException | ClassNotFoundException ex) {
                     Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -343,7 +350,8 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void quitterButtonOnMouseClicked(MouseEvent event) {
+    private void quitterButtonOnMouseClicked(MouseEvent event) throws IOException {
+        //connectedUser = userFacade.quiter(selectedUser);
         deconnect();
         Platform.exit();
     }

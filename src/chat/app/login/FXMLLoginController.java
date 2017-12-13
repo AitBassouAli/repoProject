@@ -145,7 +145,7 @@ public class FXMLLoginController implements Initializable {
         stageAlerte.setScene(scene);
 
         if (!utilisateurMotDePasseOublieTextField.getText().isEmpty()) {
-            int result = userFacade.sendPW(utilisateurMotDePasseOublieTextField.getText());
+            int result = userFacade.sendPW(new User(utilisateurMotDePasseOublieTextField.getText()));
             switch (result) {
                 case -2:
                     alerteController.erreurAnchorPane.toFront();
@@ -197,7 +197,6 @@ public class FXMLLoginController implements Initializable {
         if (inscriptionPermis(user)) {
             Object[] res = userFacade.addUser(user);
             int res1 = (int) res[0];
-            user = (User) res[1];
             if (res1 == 1) {
                 alerteController.succesAnchorPane.toFront();
                 alerteController.succesLabel.setText("Votre compte a été créé avec succès");

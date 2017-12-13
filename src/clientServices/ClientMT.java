@@ -6,11 +6,11 @@
 package clientServices;
 
 import bean.ConnectedUsers;
+import bean.Message;
 import bean.User;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import util.Session;
 
@@ -35,6 +35,25 @@ public class ClientMT {
         return clientS;
     }
 
+    public void deconnecter() throws IOException {
+        Socket socket = (Socket) Session.getAttribut("connectedSocket");
+        socket.close();
+        Session.setAttribut(null, "connectedSocket");
+    }
+
+    public void quiter() throws IOException {
+        Socket serviceSocket = (Socket) Session.getAttribut("connectedServiceSocket");
+        serviceSocket.close();
+        Session.setAttribut(null, "connectedServiceSocket");
+        deconnecter();
+    }
+
+    public void beforConnection() throws IOException {
+        Socket serviceSocket = new Socket("localhost", 60830);
+        Session.setAttribut(serviceSocket, "connectedServiceSocket");
+
+    }
+
     public ConnectedUsers connection(ConnectedUsers connect) throws IOException {
         Socket s = connecter();
         connect.setPort(s.getLocalPort());
@@ -44,16 +63,25 @@ public class ClientMT {
     }
 
     public void send(User ConnectedUser, ConnectedUsers portDist, String msg) throws IOException {
-        PrintWriter pw = new PrintWriter(clientS.getOutputStream(), true);
-        String msgInfos = ConnectedUser.getId() + "=>" + msg + "@" + portDist.getIp() + "//" + portDist.getPort();
-        pw.println(msgInfos);
+        Message message = new Message(ConnectedUser, portDist.getPort(), msg);
+        ObjectOutputStream outObject = new ObjectOutputStream(clientS.getOutputStream());
+        outObject.writeObject(message);
+        outObject.flush();
+        System.out.println("sendiiing");
+//        PrintWriter pw = new PrintWriter(clientS.getOutputStream(), true);
+//        String msgInfos = ConnectedUser.getId() + "=>" + msg + "@" + portDist.getIp() + "//" + portDist.getPort();
+//        pw.println(msgInfos);
     }
 
-    public String[] recieve() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(clientS.getInputStream()));
-        String msg = br.readLine();
-        String[] id_Msg = msg.split("=>");
-        return id_Msg;
+    public Message recieve() throws IOException, ClassNotFoundException {
+//        BufferedReader br = new BufferedReader(new InputStreamReader(clientS.getInputStream()));
+//        String msg = br.readLine();
+//        String[] id_Msg = msg.split("=>");
+//        return id_Msg;
+        System.out.println("recieving");
+        ObjectInputStream inOpject = new ObjectInputStream(clientS.getInputStream());
+        Message message = (Message) inOpject.readObject();
+        return message;
     }
 
 }

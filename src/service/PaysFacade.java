@@ -6,21 +6,32 @@
 package service;
 
 import bean.Pays;
+import bean.UserService;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author HP
  */
-public class PaysFacade extends AbstractFacade<Pays> {
+public class PaysFacade extends AbstractFacade {
 
-    public PaysFacade() {
-        super(Pays.class);
+    public List<Object> findAllPaysObjects() throws IOException {
+        UserService userService = new UserService("findAllPaysObjects");
+        userService = doExecute(userService);
+        return userService.getObjetList();
     }
 
-    @Override
-    public List<Pays> findAll() {
-        return getEntityManager().createQuery("SELECT p FROM Pays p ORDER BY p.nom ASC").getResultList();
+    public List<Pays> findAll() throws IOException {
+        List<Pays> list = new ArrayList<>();
+        List<Object> objects = findAllPaysObjects();
+        if (!objects.isEmpty()) {
+            objects.stream().forEach((object) -> {
+                list.add((Pays) object);
+            });
+        }
+        return list;
     }
 
 }
