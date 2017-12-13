@@ -30,7 +30,7 @@ public class ClientMT {
     }
 
     public Socket connecter() throws IOException {
-        clientS = new Socket("localhost", 50834);
+        clientS = new Socket((String) Session.getAttribut("adresseIP"), 50834);
         Session.setAttribut(clientS, "connectedSocket");
         return clientS;
     }
@@ -49,7 +49,7 @@ public class ClientMT {
     }
 
     public void beforConnection() throws IOException {
-        Socket serviceSocket = new Socket("localhost", 60830);
+        Socket serviceSocket = new Socket((String) Session.getAttribut("adresseIP"), 60830);
         Session.setAttribut(serviceSocket, "connectedServiceSocket");
 
     }
