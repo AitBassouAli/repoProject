@@ -36,22 +36,22 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <JFXTextField fx:id="utilisateurInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="136.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur">
+                  <JFXTextField fx:id="utilisateurInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="136.0" onKeyPressed="#utilisateurInscrireOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXTextField>
-                  <JFXTextField fx:id="emailInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="E-mail">
+                  <JFXTextField fx:id="emailInscrireTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" onKeyPressed="#utilisateurInscrireOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="E-mail">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXTextField>
-                  <JFXPasswordField fx:id="motDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="242.0" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
+                  <JFXPasswordField fx:id="motDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="242.0" onKeyPressed="#utilisateurInscrireOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXPasswordField>
-                  <JFXPasswordField fx:id="confirmerMotDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="295.0" prefHeight="25.0" prefWidth="250.0" promptText="Confirmer le mot de passe">
+                  <JFXPasswordField fx:id="confirmerMotDePasseInscrirePasswordField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="295.0" onKeyPressed="#utilisateurInscrireOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Confirmer le mot de passe">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -75,7 +75,7 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <JFXTextField fx:id="utilisateurMotDePasseOublieTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
+                  <JFXTextField fx:id="utilisateurMotDePasseOublieTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" onKeyPressed="#utilisateurMotDePasseOublieOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -99,12 +99,12 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <JFXTextField fx:id="utilisateurSeConnecterTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
+                  <JFXTextField fx:id="utilisateurSeConnecterTextField" focusColor="#1976d2" labelFloat="true" layoutX="68.0" layoutY="189.0" onKeyPressed="#motDePasseSeConnecterOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Utilisateur / E-mail">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </JFXTextField>
-                  <JFXPasswordField fx:id="motDePasseSeConnecterPasswordField" labelFloat="true" layoutX="68.0" layoutY="242.0" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
+                  <JFXPasswordField fx:id="motDePasseSeConnecterPasswordField" labelFloat="true" layoutX="68.0" layoutY="242.0" onKeyPressed="#motDePasseSeConnecterOnKeyPressed" prefHeight="25.0" prefWidth="250.0" promptText="Mot de passe">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

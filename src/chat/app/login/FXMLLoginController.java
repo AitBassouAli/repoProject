@@ -25,6 +25,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -388,6 +390,30 @@ public class FXMLLoginController implements Initializable {
     private void minimiserLoginButtonOnMouseClicked(MouseEvent event) {
         Stage stage = (Stage) ((Text) event.getSource()).getScene().getWindow();
         stage.setIconified(true);
+    }
+
+    @FXML
+    private void motDePasseSeConnecterOnKeyPressed(KeyEvent event) throws Exception {
+        if (event.getCode().equals(KeyCode.ENTER))
+        {
+            seConnecterLoginButtonOnAction(null);
+        }
+    }
+
+    @FXML
+    private void utilisateurInscrireOnKeyPressed(KeyEvent event) throws Exception {
+        if (event.getCode().equals(KeyCode.ENTER))
+        {
+            inscrireLoginButtonOnAction(null);
+        }
+    }
+
+    @FXML
+    private void utilisateurMotDePasseOublieOnKeyPressed(KeyEvent event) throws Exception {
+        if (event.getCode().equals(KeyCode.ENTER))
+        {
+            motDePasseOublieLoginButtonOnAction(null);
+        }
     }
 
 }
