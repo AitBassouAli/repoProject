@@ -6,6 +6,7 @@
 package service;
 
 import bean.ConnectedUsers;
+import bean.Conversation;
 import bean.User;
 import bean.UserService;
 import clientServices.ClientMT;
@@ -51,9 +52,9 @@ public class ConnectedUsersFacade extends AbstractFacade {
         clientMT.quiter();
     }
 
-    public void envoyer(User connectedUser, User userDist, String msg) throws IOException {
+    public void envoyer(User connectedUser, User userDist, String msg, Conversation conversation) throws IOException {
         ConnectedUsers portDist = findByUser(userDist);
         clientMT = new ClientMT((Socket) Session.getAttribut("connectedSocket"));
-        clientMT.send(connectedUser, portDist, msg);
+        clientMT.send(connectedUser, portDist, msg, conversation);
     }
 }

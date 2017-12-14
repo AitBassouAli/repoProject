@@ -17,14 +17,16 @@ public class Message implements Serializable {
     private User sender;
     private int port;
     private String message;
+    private Conversation conversation;
 
     public Message() {
     }
 
-    public Message(User sender, int reciever, String message) {
+    public Message(User sender, int reciever, String message, Conversation conversation) {
         this.sender = sender;
         this.port = reciever;
         this.message = message;
+        this.conversation = conversation;
     }
 
     public User getSender() {
@@ -49,6 +51,14 @@ public class Message implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Conversation getConversation() {
+        return conversation;
+    }
+
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package service;
 
+import bean.Conversation;
 import bean.User;
 import bean.UserService;
 import java.io.IOException;
@@ -69,8 +70,23 @@ public class UserFacade extends AbstractFacade {
     }
 
     public List<User> getUsers() throws IOException {
+        List<User> list = getUsersFromObjects(getUserObjects());
+        return list;
+    }
+
+    public List<Object> findUsersObjectsContaints(String motRechercher) throws IOException {
+        UserService userService = new UserService(motRechercher, "findUsersObjectsContaints");
+        userService = doExecute(userService);
+        return userService.getObjetList();
+    }
+
+    public List<User> findUsersContaints(String motRechercher) throws IOException {
+        List<User> list = getUsersFromObjects(findUsersObjectsContaints(motRechercher));
+        return list;
+    }
+
+    public List<User> getUsersFromObjects(List<Object> objects) throws IOException {
         List<User> list = new ArrayList<>();
-        List<Object> objects = getUserObjects();
         if (!objects.isEmpty()) {
             for (int i = 0; i < objects.size(); i++) {
                 list.add((User) objects.get(i));
@@ -103,6 +119,14 @@ public class UserFacade extends AbstractFacade {
         UserService userService = new UserService(user, "sendPW");
         UserService service = doExecute(userService);
         return service.getServiceReturn();
+    }
+
+    public List<User> getUserFromConversation(User connectedUser, List<Conversation> conversations) {
+        List<User> users = new ArrayList<>();
+        conversations.stream().forEach((conversation) -> {
+            users.add(conversation.getSender().equals(connectedUser) ? conversation.getReciever() : conversation.getSender());
+        });
+        return users;
     }
 
 }

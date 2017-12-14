@@ -6,6 +6,7 @@
 package clientServices;
 
 import bean.ConnectedUsers;
+import bean.Conversation;
 import bean.Message;
 import bean.User;
 import java.io.IOException;
@@ -62,8 +63,8 @@ public class ClientMT {
 
     }
 
-    public void send(User ConnectedUser, ConnectedUsers portDist, String msg) throws IOException {
-        Message message = new Message(ConnectedUser, portDist.getPort(), msg);
+    public void send(User ConnectedUser, ConnectedUsers portDist, String msg, Conversation conversation) throws IOException {
+        Message message = new Message(ConnectedUser, portDist.getPort(), msg, conversation);
         ObjectOutputStream outObject = new ObjectOutputStream(clientS.getOutputStream());
         outObject.writeObject(message);
         outObject.flush();

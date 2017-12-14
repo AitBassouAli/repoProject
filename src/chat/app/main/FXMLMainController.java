@@ -5,6 +5,7 @@
  */
 package chat.app.main;
 
+import bean.Conversation;
 import bean.Message;
 import bean.Pays;
 import bean.User;
@@ -52,6 +53,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import service.ConnectedUsersFacade;
+import service.ConversationFacade;
 import service.PaysFacade;
 import service.UserFacade;
 import util.DateUtil;
@@ -130,16 +132,19 @@ public class FXMLMainController implements Initializable {
     private FontAwesomeIconView quitterButton;
     @FXML
     private FontAwesomeIconView minimiserButton;
-
+    @FXML
+    private JFXListView<Conversation> conversationsListView;
     private double xOffset = 0;
     private double yOffset = 0;
     private UserFacade userFacade = new UserFacade();
-    private PaysFacade paysFacade = new PaysFacade();
-    private ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
+    PaysFacade paysFacade = new PaysFacade();
+    ConnectedUsersFacade connectedUsersFacade = new ConnectedUsersFacade();
+    ConversationFacade conversationFacade = new ConversationFacade();
     private User connectedUser = (User) Session.getAttribut("connectedUser");
     private User selectedUser;
+    private Conversation conversationCorante;
     @FXML
-    private JFXListView<?> conversationsListView;
+    private AnchorPane aucuneMessageAnchorPane;
 
     /**
      * Initializes the controller class.
@@ -161,6 +166,8 @@ public class FXMLMainController implements Initializable {
                             Thread.sleep(5000);
                         } catch (InterruptedException ex) {
                             System.out.println("interrupted");
+                        } catch (IOException ex) {
+                            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 }
@@ -173,13 +180,25 @@ public class FXMLMainController implements Initializable {
         }
     }
 
-    public void initListView() {
-        try {
-            List<User> usersConnectee = userFacade.getUsers();
-            usersConnectee.remove(connectedUser);
-            utilisateursListView.getItems().setAll(usersConnectee);
-        } catch (Exception e) {
+    public void initListView() throws IOException {
+        List<Conversation> conversations = getConversation();
+        if (conversations.isEmpty()) {
+            aucuneMessageAnchorPane.toFront();
+        } else {
+            utilisateursListView.getItems().setAll(getUserFromConversation(conversations));
+            utilisateursAnchorPane.toFront();
         }
+    }
+
+    public List<User> getUserFromConversation(List<Conversation> conversations) {
+        List<User> users = userFacade.getUserFromConversation(connectedUser, conversations);
+        return users;
+    }
+
+    public List<Conversation> getConversation() throws IOException {
+        List<Conversation> conversations = conversationFacade.findByUser(connectedUser);
+        conversationsListView.getItems().setAll(conversations);
+        return conversations;
     }
 
     @FXML
@@ -306,7 +325,6 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void AnnulerButtonOnAction(ActionEvent event) {
-        initListView();
         utilisateursAnchorPane.toFront();
         chatAppFirstAnchorPane.toFront();
         rechercherTextField.requestFocus();
@@ -323,7 +341,7 @@ public class FXMLMainController implements Initializable {
         }
         messagesTextArea.applyCss();
         messagesTextArea.appendText("Vous  : " + msg + "\n");
-        connectedUsersFacade.envoyer(connectedUser, userDist, msg);
+        connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
     }
 
     public void refreshMeassagesTextArea() {
@@ -357,16 +375,39 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void utilisateursListViewOnMouseClicked(MouseEvent event) {
+    private void utilisateursListViewOnMouseClicked(MouseEvent event) throws IOException {
         selectedUser = utilisateursListView.getSelectionModel().getSelectedItem();
         if (selectedUser != null || selectedUser.getId() == null) {
             messagesAnchorPane.toFront();
+            conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
         }
     }
 
     @FXML
-    private void rechercherTextFieldOnKeyPressed(KeyEvent event) {
+    private void conversationsListViewOnMouseClicked(MouseEvent event) {
+        conversationCorante = conversationsListView.getSelectionModel().getSelectedItem();
+        selectedUser = conversationCorante.getSender().equals(connectedUser) ? conversationCorante.getReciever() : conversationCorante.getSender();
+        messagesTextArea.clear();
+        //chargerement des message correspendant au conversation courante via le ficher conversationCorante.getId().txt
+        messagesAnchorPane.toFront();
+    }
 
+    @FXML
+    private void messageAEnvoyerTextAreaOnKeyPressed(KeyEvent event) throws IOException {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            envoyerMessageIconViewOnMouseClicked(null);
+        }
+    }
+
+    @FXML
+    private void rechercherTextFieldOnKeyPressed(KeyEvent event) throws IOException, InterruptedException {
+        List<User> utilisateursRecherche = userFacade.findUsersContaints(rechercherTextField.getText());
+        if (utilisateursRecherche.isEmpty()) {
+            aucuneMessageAnchorPane.toFront();
+        } else {
+            utilisateursAnchorPane.toFront();
+            utilisateursListView.getItems().setAll(utilisateursRecherche);
+        }
     }
 
     private User getNewParams() throws ParseException {
@@ -693,18 +734,6 @@ public class FXMLMainController implements Initializable {
 
     public void setConnectedUser(User connectedUser) {
         this.connectedUser = connectedUser;
-    }
-
-    @FXML
-    private void conversationsListViewOnMouseClicked(MouseEvent event) {
-    }
-
-    @FXML
-    private void messageAEnvoyerTextAreaOnKeyPressed(KeyEvent event) throws IOException {
-        if (event.getCode().equals(KeyCode.ENTER))
-        {
-            envoyerMessageIconViewOnMouseClicked(null);
-        }
     }
 
 }
