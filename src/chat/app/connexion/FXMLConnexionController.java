@@ -25,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import util.Session;
 
 /**
  * FXML Controller class
@@ -35,8 +36,6 @@ public class FXMLConnexionController implements Initializable {
 
     @FXML
     public JFXTextField adresseDuServeurTextField;
-    @FXML
-    private JFXTextField portTextField;
     @FXML
     private JFXButton connexionButton;
     @FXML
@@ -74,6 +73,10 @@ public class FXMLConnexionController implements Initializable {
         });
 
         try {
+            if (((String) Session.getAttribut("adresseIP")) != null) {
+                Session.delete("adresseIP");
+            }
+            Session.setAttribut(adresseDuServeurTextField.getText(), "adresseIP");
             ClientMT clientMT = new ClientMT();
             clientMT.beforConnection();
 
