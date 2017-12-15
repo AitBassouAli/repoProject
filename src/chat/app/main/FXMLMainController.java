@@ -183,11 +183,11 @@ public class FXMLMainController implements Initializable {
         new Thread(() -> {
             while (connectedUser != null) {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                     if ("".equals(rechercherTextField.getText())) {
                         initListView();
                     }
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     System.out.println("interrupted");
                 } catch (IOException ex) {
@@ -351,10 +351,6 @@ public class FXMLMainController implements Initializable {
         String msg = messageAEnvoyerTextArea.getText();
         messageAEnvoyerTextArea.setText("");
         User userDist = selectedUser;
-        if (userDist == null || userDist.getId() == null) {
-            System.out.println("00000");
-            userDist = utilisateursListView.getItems().get(0);
-        }
         messagesTextArea.applyCss();
         messagesTextArea.appendText("Vous  : " + msg + "\n");
         connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
@@ -366,7 +362,6 @@ public class FXMLMainController implements Initializable {
                 try {
                     // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
                     Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
-                    System.out.println("find from refreshMeassagesTextArea methode");
                     User user = userFacade.find(message.getSender());
                     String mesg = message.getMessage();
                     messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
@@ -405,14 +400,12 @@ public class FXMLMainController implements Initializable {
             conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
             List<Conversation> conversations = getConversation();
             conversationsListView.getItems().setAll(getUserFromConversation(conversations));
-            
+
             /*
             
                 file
             
-            */
-            
-            
+             */
             rechercherTextField.setText("");
             conversationsListView.toFront();
             utilisateursListView.toBack();
@@ -437,7 +430,6 @@ public class FXMLMainController implements Initializable {
             System.out.println(f.getAbsolutePath() + " does not exists");
         }
     }*/
-
     @FXML
     private void conversationsListViewOnMouseClicked(MouseEvent event) throws IOException {
         selectedUser = conversationsListView.getSelectionModel().getSelectedItem();
@@ -451,7 +443,6 @@ public class FXMLMainController implements Initializable {
                 File
             
              */
-            
             messagesAnchorPane.toFront();
         }
     }

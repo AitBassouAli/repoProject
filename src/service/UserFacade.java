@@ -27,7 +27,6 @@ public class UserFacade extends AbstractFacade {
         try {
             UserService service = getService();
             if (service.getServiceReturn() == 1) {
-                System.out.println("********** sseConnecter returned 1 **********");
                 connectedUsersFacade.connect((User) service.getObjet());
             }
             return new Object[]{service.getServiceReturn(), service.getObjet()};

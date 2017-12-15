@@ -68,18 +68,9 @@ public class ClientMT {
         ObjectOutputStream outObject = new ObjectOutputStream(clientS.getOutputStream());
         outObject.writeObject(message);
         outObject.flush();
-        System.out.println("sendiiing");
-//        PrintWriter pw = new PrintWriter(clientS.getOutputStream(), true);
-//        String msgInfos = ConnectedUser.getId() + "=>" + msg + "@" + portDist.getIp() + "//" + portDist.getPort();
-//        pw.println(msgInfos);
     }
 
     public Message recieve() throws IOException, ClassNotFoundException {
-//        BufferedReader br = new BufferedReader(new InputStreamReader(clientS.getInputStream()));
-//        String msg = br.readLine();
-//        String[] id_Msg = msg.split("=>");
-//        return id_Msg;
-        System.out.println("recieving");
         ObjectInputStream inOpject = new ObjectInputStream(clientS.getInputStream());
         Message message = (Message) inOpject.readObject();
         return message;

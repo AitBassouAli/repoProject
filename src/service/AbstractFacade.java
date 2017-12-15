@@ -20,22 +20,16 @@ public class AbstractFacade {
 
     public void writeObject(UserService userService) throws IOException {
         Socket socket = (Socket) Session.getAttribut("connectedServiceSocket");
-        if (socket != null) {
-            userService.setPort(socket.getLocalPort());
-            ObjectOutputStream outObject = new ObjectOutputStream(socket.getOutputStream());
-            outObject.writeObject(userService);
-            outObject.flush();
-            System.out.println("sendiiing a request");
-        } else {
-            System.out.println("****** socket est null *******");
-        }
+        userService.setPort(socket.getLocalPort());
+        ObjectOutputStream outObject = new ObjectOutputStream(socket.getOutputStream());
+        outObject.writeObject(userService);
+        outObject.flush();
     }
 
     public UserService getService() throws IOException, ClassNotFoundException {
         Socket socket = (Socket) Session.getAttribut("connectedServiceSocket");
         ObjectInputStream inOpject = new ObjectInputStream(socket.getInputStream());
         UserService service = (UserService) inOpject.readObject();
-        System.out.println(service);
         return service;
     }
 
@@ -43,10 +37,9 @@ public class AbstractFacade {
         writeObject(userService);
         try {
             UserService service = getService();
-            System.out.println("returning from doExecute  => " + service);
             return service;
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("do execute Client catchs an error"+e.getLocalizedMessage());
+            System.out.println("do execute Client catchs an error" + e.getLocalizedMessage());
             return null;
         }
     }

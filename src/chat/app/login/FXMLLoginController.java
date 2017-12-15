@@ -168,7 +168,7 @@ public class FXMLLoginController implements Initializable {
             }
         } else {
             alerteController.infomationAnchorPane.toFront();
-            alerteController.informationLabel.setText("Veuillez saisir votre nom d'utilisateur ou votre adresse e-mail");
+            alerteController.informationLabel.setText("Veuillez saisir votre adresse e-mail");
             stageAlerte.show();
         }
     }
