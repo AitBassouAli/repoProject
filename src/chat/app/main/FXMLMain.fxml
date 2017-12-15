@@ -60,12 +60,17 @@
                   <FontAwesomeIconView fx:id="minimiserButton" fill="#1976d2" glyphName="MINUS_CIRCLE" layoutX="154.0" layoutY="20.0" onMouseClicked="#minimiserButtonOnMouseClicked" size="20" />
                </children>
             </AnchorPane>
+            <AnchorPane fx:id="chatAppSecondAnchorPane" layoutX="3.0" layoutY="3.0" prefHeight="456.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
+               <children>
+                  <FontAwesomeIconView fill="#1976d2" glyphName="XING" layoutX="88.0" layoutY="256.0" size="80" />
+               </children>
+            </AnchorPane>
             <AnchorPane fx:id="utilisateursAnchorPane" layoutX="3.0" layoutY="3.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;">
                <children>
                   <AnchorPane fx:id="utilisateurs" prefHeight="37.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;">
                      <children>
                         <FontAwesomeIconView fx:id="minimiserLoginButton" fill="#4d4d4d" glyphName="SEARCH" layoutX="5.0" layoutY="25.0" onMouseClicked="#minimiserLoginButtonOnMouseClicked" size="20" />
-                        <JFXTextField fx:id="rechercherTextField" focusColor="#1976d2" layoutX="31.0" layoutY="6.0" onKeyPressed="#rechercherTextFieldOnKeyPressed" prefHeight="25.0" prefWidth="198.0" promptText="Rechercher">
+                        <JFXTextField fx:id="rechercherTextField" focusColor="#1976d2" layoutX="31.0" layoutY="6.0" onKeyReleased="#rechercherTextFieldOnKeyReleased" prefHeight="25.0" prefWidth="198.0" promptText="Rechercher">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
@@ -83,15 +88,10 @@
                               </Label>
                            </children>
                         </AnchorPane>
-                        <JFXListView fx:id="conversationsListView" focusTraversable="false" onMouseClicked="#conversationsListViewOnMouseClicked" prefHeight="415.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;" />
+                        <JFXListView fx:id="conversationsListView" focusTraversable="false" onMouseClicked="#conversationsListViewOnMouseClicked" prefHeight="415.0" prefWidth="239.0" style="-fx-background-color: #4d4d4d; -fx-background-radius: 1em;" />
                         <JFXListView fx:id="utilisateursListView" focusTraversable="false" onMouseClicked="#utilisateursListViewOnMouseClicked" prefHeight="415.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
-               </children>
-            </AnchorPane>
-            <AnchorPane fx:id="chatAppSecondAnchorPane" layoutX="3.0" layoutY="3.0" prefHeight="456.0" prefWidth="239.0" style="-fx-background-color: #F3F3F3; -fx-background-radius: 1em; -fx-border-radius: 1em;">
-               <children>
-                  <FontAwesomeIconView fill="#1976d2" glyphName="XING" layoutX="88.0" layoutY="256.0" size="80" />
                </children>
             </AnchorPane>
          </children>
