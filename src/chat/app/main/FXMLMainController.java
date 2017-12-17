@@ -59,6 +59,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javax.sound.sampled.LineUnavailableException;
 import service.ConnectedUsersFacade;
 import service.ConversationFacade;
 import service.PaysFacade;
@@ -66,6 +67,7 @@ import service.UserFacade;
 import util.DateUtil;
 import static util.DateUtil.myConvertDateToStringFranch;
 import util.Session;
+import util.SoundUtils;
 
 /**
  * FXML Controller class
@@ -202,6 +204,11 @@ public class FXMLMainController implements Initializable {
                         Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
                         User user = userFacade.find(message.getSender());
                         String mesg = message.getMessage();
+                        try {
+                            SoundUtils.tone(400,500, 0.2);
+                        } catch (LineUnavailableException ex) {
+                            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         Platform.runLater(() -> {
                             try {
                                 Conversation conversationReceive = conversationFacade.findOrCreate(new Conversation(user, connectedUser));
