@@ -30,7 +30,7 @@ public class User implements Serializable {
     private int blocked;
     private boolean status;
     private Pays paye;
-
+            
     public User() {
     }
 

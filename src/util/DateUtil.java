@@ -91,6 +91,16 @@ public class DateUtil {
 
     }
 
+    public static String myConvertDateToStringFranch(Date date) throws ParseException {
+        if (date != null) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            return simpleDateFormat.format(date);
+        } else {
+            return "";
+        }
+
+    }
+
     public static Date localDateToDate(LocalDate date) throws ParseException {
         if (date != null) {
             return myconvertStringToDate(date.toString());

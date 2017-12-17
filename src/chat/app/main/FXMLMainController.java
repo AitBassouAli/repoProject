@@ -18,21 +18,25 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -46,7 +50,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -61,6 +64,7 @@ import service.ConversationFacade;
 import service.PaysFacade;
 import service.UserFacade;
 import util.DateUtil;
+import static util.DateUtil.myConvertDateToStringFranch;
 import util.Session;
 
 /**
@@ -120,12 +124,11 @@ public class FXMLMainController implements Initializable {
     private JFXButton AnnulerButton;
     @FXML
     private AnchorPane messagesAnchorPane;
-    @FXML
     private FontAwesomeIconView parametresConversationIconView;
     private Label motDePasseOublieLabel12;
     private Label dateDeCreationConversationLabel;
     @FXML
-    private JFXTextArea messageAEnvoyerTextArea;
+    private JFXTextField messageAEnvoyerTextArea;
     @FXML
     private FontAwesomeIconView envoyerMessageIconView;
     @FXML
@@ -149,6 +152,14 @@ public class FXMLMainController implements Initializable {
     private Conversation conversationCorante;
     @FXML
     private AnchorPane aucuneMessageAnchorPane;
+    private Map<Long, String> messagesMap = new TreeMap<Long, String>();
+    @FXML
+    private Label utilisateurDateDeModificationLabel;
+    private Thread t1;
+    private Thread t2;
+    private volatile boolean stop = false;
+    @FXML
+    private FontAwesomeIconView supprimerConversationIconView;
 
     /**
      * Initializes the controller class.
@@ -160,8 +171,7 @@ public class FXMLMainController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             utilisateursAnchorPane.toFront();
-            refreshMeassagesTextArea();
-            refreshUtilisateursListView();
+            readFromFile();
             List<Conversation> conversations = getConversation();
             if (conversations.isEmpty()) {
                 aucuneMessageAnchorPane.toFront();
@@ -174,35 +184,167 @@ public class FXMLMainController implements Initializable {
             List<User> usersConnectee = userFacade.getUsers();
             usersConnectee.remove(connectedUser);
             utilisateursListView.getItems().setAll(usersConnectee);
+            refreshMeassagesTextArea();
+            refreshUtilisateursListView();
         } catch (IOException ex) {
             Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void refreshUtilisateursListView() {
+    public void refreshMeassagesTextArea() {
         new Thread(() -> {
-            while (connectedUser != null) {
-                try {
-                    Thread.sleep(500);
-                    if ("".equals(rechercherTextField.getText())) {
-                        initListView();
+            t1 = Thread.currentThread();
+            System.out.println(Thread.currentThread().getName());
+            while (!stop) {
+                while (connectedUser != null) {
+                    try {
+                        // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
+                        Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
+                        User user = userFacade.find(message.getSender());
+                        String mesg = message.getMessage();
+                        Platform.runLater(() -> {
+                            try {
+                                Conversation conversationReceive = conversationFacade.findOrCreate(new Conversation(user, connectedUser));
+                                if (conversationCorante != null) {
+                                    if ((conversationCorante.getReciever()).equals(user) || (conversationCorante.getSender()).equals(user)) {
+                                        messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
+                                    }
+                                } else {
+                                    if (conversationReceive != null) {
+                                        selectedUser = user;
+                                        conversationCorante = conversationReceive;
+                                    }
+                                    messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
+                                }
+                                if (conversationReceive != null) {
+                                    if (!(messagesMap.containsKey(conversationReceive.getId()))) {
+                                        messagesMap.put(conversationReceive.getId(), "");
+                                    }
+                                    messagesMap.put(conversationReceive.getId(), ((String) messagesMap.get(conversationReceive.getId()) + user.getUserName() + " : " + mesg + System.getProperty("line.separator")));
+                                    if ("".equals(rechercherTextField.getText())) {
+                                        messagesAnchorPane.toFront();
+                                        conversationsListView.toFront();
+                                        utilisateursListView.toBack();
+                                        aucuneMessageAnchorPane.toBack();
+                                    }
+                                }
+                            } catch (IOException ex) {
+                                System.out.println("Probleme dans la fonction refreshMeassagesTextArea()");
+                            }
+                        });
+                    } catch (ClassNotFoundException | IOException ex) {
+                        Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                    System.out.println("interrupted");
-                } catch (IOException ex) {
-                    Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            System.out.println("Stopped Thread 1");
+        }).start();
+    }
+
+    public void refreshUtilisateursListView() {
+        new Thread(() -> {
+            t2 = Thread.currentThread();
+            System.out.println(Thread.currentThread().getName());
+            while (!stop) {
+                while (connectedUser != null) {
+                    try {
+                        Thread.sleep(500);
+                        if ("".equals(rechercherTextField.getText())) {
+                            Platform.runLater(() -> {
+                                try {
+                                    initListView();
+                                } catch (IOException ex) {
+                                }
+                            });
+                            Platform.runLater(() -> {
+                                try {
+                                    initConverarionListView();
+                                } catch (IOException ex) {
+                                }
+                            });
+                        }
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        System.out.println("interrupted");
+
+                    }
+                }
+            }
+            System.out.println("Stopped Thread 2");
         }).start();
     }
 
     public void initListView() throws IOException {
+        if (!stop) {
+            List<User> usersConnectee = userFacade.getUsers();
+            usersConnectee.remove(connectedUser);
+            Platform.runLater(() -> {
+                utilisateursListView.getItems().setAll(usersConnectee);
+            });
+        }
+    }
+
+    public void initConverarionListView() throws IOException {
+        if (!stop) {
+            List<Conversation> conversations = getConversation();
+            Platform.runLater(() -> {
+                conversationsListView.getItems().setAll(getUserFromConversation(conversations));
+            });
+        }
+    }
+
+    public void readFromFile() throws IOException {
+        File folder = new File("logs/");
+        File[] listOfFiles = folder.listFiles();
         List<Conversation> conversations = getConversation();
-        List<User> usersConnectee = userFacade.getUsers();
-        conversationsListView.getItems().setAll(getUserFromConversation(conversations));
-        usersConnectee.remove(connectedUser);
-        utilisateursListView.getItems().setAll(usersConnectee);
+
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                String fileName = (file.getName()).replace(".txt", "");
+
+                long id = Long.parseLong(fileName);
+
+                for (Conversation c : conversations) {
+                    if (c.getId() == id) {
+                        String path = "logs/" + file.getName();
+                        String content = readFile(path);
+                        messagesMap.put(id, content);
+
+                        System.out.println(file.getName());
+                        System.out.println(fileName);
+                    }
+                }
+            }
+        }
+    }
+
+    static String readFile(String path) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, StandardCharsets.UTF_8);
+    }
+
+    public void writeFromFile() throws IOException {
+        for (Map.Entry<Long, String> entry : messagesMap.entrySet()) {
+            String path = "logs/" + entry.getKey() + ".txt";
+            File file = new File(path);
+            boolean b;
+            if (!(file.exists())) {
+                file.createNewFile();
+            }
+            if (file.exists()) {
+                try {
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                    bw.write(entry.getValue());
+                    bw.append(System.getProperty("line.separator"));
+                    bw.flush();
+                    bw.close();
+                } catch (IOException e) {
+                    System.out.println("Probleme dans writeFromFile() 1");
+                } catch (Exception e) {
+                    System.out.println("Probleme dans writeFromFile() 2");
+                }
+            }
+        }
     }
 
     public List<User> getUserFromConversation(List<Conversation> conversations) {
@@ -250,9 +392,11 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void deconnexionLabelOnMouseClicked(MouseEvent event) throws IOException {
-
+    private void deconnexionLabelOnMouseClicked(MouseEvent event) throws IOException, InterruptedException {
+        writeFromFile();
+        stop = true;
         deconnect();
+        Thread.sleep(1000);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat/app/login/FXMLLogin.fxml"));
         Parent root = (Parent) loader.load();
@@ -353,35 +497,21 @@ public class FXMLMainController implements Initializable {
         User userDist = selectedUser;
         messagesTextArea.applyCss();
         messagesTextArea.appendText("Vous  : " + msg + "\n");
-        connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
-    }
-
-    public void refreshMeassagesTextArea() {
-        new Thread(() -> {
-            while (connectedUser != null) {
-                try {
-                    // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
-                    Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
-                    User user = userFacade.find(message.getSender());
-                    String mesg = message.getMessage();
-                    messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
-
-                    /*
-                    
-                       Add message to file
-                    
-                     */
-                } catch (IOException | ClassNotFoundException ex) {
-                    Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }).start();
+        if (messagesMap.containsKey(conversationCorante.getId())) {
+            messagesMap.put(conversationCorante.getId(), ((String) messagesMap.get(conversationCorante.getId()) + "Vous  : " + msg + System.getProperty("line.separator")));
+        }
+        if (conversationCorante != null) {
+            connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
+        }
     }
 
     @FXML
-    private void quitterButtonOnMouseClicked(MouseEvent event) throws IOException {
+    private void quitterButtonOnMouseClicked(MouseEvent event) throws IOException, InterruptedException {
         //connectedUser = userFacade.quiter(selectedUser);
+        writeFromFile();
+        stop = true;
         deconnect();
+        Thread.sleep(1000);
         Platform.exit();
     }
 
@@ -395,54 +525,43 @@ public class FXMLMainController implements Initializable {
     private void utilisateursListViewOnMouseClicked(MouseEvent event) throws IOException {
         selectedUser = utilisateursListView.getSelectionModel().getSelectedItem();
         if (selectedUser != null || selectedUser.getId() == null) {
-            messagesAnchorPane.toFront();
-
             conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
             List<Conversation> conversations = getConversation();
-            conversationsListView.getItems().setAll(getUserFromConversation(conversations));
 
-            /*
-            
-                file
-            
-             */
+            conversationsListView.getItems().setAll(getUserFromConversation(conversations));
             rechercherTextField.setText("");
             conversationsListView.toFront();
             utilisateursListView.toBack();
             aucuneMessageAnchorPane.toBack();
+
+            if (!(messagesMap.containsKey(conversationCorante.getId()))) {
+                messagesMap.put(conversationCorante.getId(), "");
+            }
+
+            messagesTextArea.clear();
+            String userDate = selectedUser.getUserName() + " : " + conversationCorante.getDateModification();
+            utilisateurDateDeModificationLabel.setText(userDate);
+            messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
+            messagesAnchorPane.toFront();
         }
     }
 
-    /*public void (String[] args) {
-        File f = new File("C:\\temp\\test.log");
-        boolean b;
-        if (f.exists()) {
-            try {
-                BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
-                bw.append(System.getProperty("line.separator"));
-                bw.append("line 4");
-                bw.flush();
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println(f.getAbsolutePath() + " does not exists");
-        }
-    }*/
     @FXML
-    private void conversationsListViewOnMouseClicked(MouseEvent event) throws IOException {
+    private void conversationsListViewOnMouseClicked(MouseEvent event) throws IOException, ParseException {
         selectedUser = conversationsListView.getSelectionModel().getSelectedItem();
         if (selectedUser != null) {
             conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
             messagesTextArea.clear();
+            String userDate = selectedUser.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
+            utilisateurDateDeModificationLabel.setText(userDate);
 
+            if (!(messagesMap.containsKey(conversationCorante.getId()))) {
+                messagesMap.put(conversationCorante.getId(), "");
+            }
 
-            /*
-                
-                File
-            
-             */
+            if (messagesMap.containsKey(conversationCorante.getId())) {
+                messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
+            }
             messagesAnchorPane.toFront();
         }
     }
@@ -700,11 +819,11 @@ public class FXMLMainController implements Initializable {
         this.dateDeCreationConversationLabel = dateDeCreationConversationLabel;
     }
 
-    public JFXTextArea getMessageAEnvoyerTextArea() {
+    public JFXTextField getMessageAEnvoyerTextArea() {
         return messageAEnvoyerTextArea;
     }
 
-    public void setMessageAEnvoyerTextArea(JFXTextArea messageAEnvoyerTextArea) {
+    public void setMessageAEnvoyerTextArea(JFXTextField messageAEnvoyerTextArea) {
         this.messageAEnvoyerTextArea = messageAEnvoyerTextArea;
     }
 
@@ -801,6 +920,10 @@ public class FXMLMainController implements Initializable {
             conversationsListView.toBack();
             aucuneMessageAnchorPane.toBack();
         }
+    }
+
+    @FXML
+    private void supprimerConversationIconViewOnMouseClicked(MouseEvent event) {
     }
 
 }

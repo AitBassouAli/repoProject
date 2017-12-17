@@ -6,6 +6,7 @@
 package bean;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -15,6 +16,7 @@ public class Conversation implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
+    private Date dateModification;
     private User sender;
     private User reciever;
 
@@ -32,6 +34,14 @@ public class Conversation implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Date getDateModification() {
+        return dateModification;
+    }
+
+    public void setDateModification(Date dateModification) {
+        this.dateModification = dateModification;
     }
 
     public User getSender() {
