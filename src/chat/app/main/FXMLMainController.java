@@ -205,7 +205,7 @@ public class FXMLMainController implements Initializable {
                         User user = userFacade.find(message.getSender());
                         String mesg = message.getMessage();
                         try {
-                            SoundUtils.tone(400,500, 0.2);
+                            SoundUtils.tone(400, 500, 0.2);
                         } catch (LineUnavailableException ex) {
                             Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -908,8 +908,6 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void rechercherTextFieldOnKeyReleased(KeyEvent event) throws IOException {
-        List<User> utilisateursRecherche = userFacade.findUsersContaints(rechercherTextField.getText());
-        utilisateursRecherche.remove(connectedUser);
         chatAppFirstAnchorPane.toFront();
         if ("".equals(rechercherTextField.getText())) {
             List<Conversation> conversations = getConversation();
@@ -922,6 +920,8 @@ public class FXMLMainController implements Initializable {
                 aucuneMessageAnchorPane.toBack();
             }
         } else {
+            List<User> utilisateursRecherche = userFacade.findUsersContaints(rechercherTextField.getText());
+            utilisateursRecherche.remove(connectedUser);
             utilisateursListView.getItems().setAll(utilisateursRecherche);
             utilisateursListView.toFront();
             conversationsListView.toBack();
@@ -930,7 +930,15 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void supprimerConversationIconViewOnMouseClicked(MouseEvent event) {
+    private void supprimerConversationIconViewOnMouseClicked(MouseEvent event) throws IOException {
+        chatAppFirstAnchorPane.toFront();
+        conversationsListView.getItems().remove(conversationCorante);
+        conversationCorante = conversationFacade.Supprimer(conversationCorante);
+        if (conversationsListView.getItems().isEmpty()) {
+            conversationsListView.toBack();
+            utilisateursListView.toBack();
+            aucuneMessageAnchorPane.toFront();
+        }
     }
 
 }

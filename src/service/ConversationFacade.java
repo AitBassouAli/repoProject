@@ -42,4 +42,10 @@ public class ConversationFacade extends AbstractFacade {
 
     }
 
+    public Conversation Supprimer(Conversation conversation) throws IOException {
+        UserService userService = new UserService(conversation, "supprimerConversation");
+        doExecute(userService);
+        return null;
+    }
+
 }
