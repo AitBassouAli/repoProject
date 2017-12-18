@@ -222,6 +222,8 @@ public class FXMLMainController implements Initializable {
                                         conversationCorante = conversationReceive;
                                     }
                                     messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
+                                    String userDate = user.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
+                                    utilisateurDateDeModificationLabel.setText(userDate);
                                 }
                                 if (conversationReceive != null) {
                                     if (!(messagesMap.containsKey(conversationReceive.getId()))) {
@@ -237,6 +239,8 @@ public class FXMLMainController implements Initializable {
                                 }
                             } catch (IOException ex) {
                                 System.out.println("Probleme dans la fonction refreshMeassagesTextArea()");
+                            } catch (ParseException ex) {
+                                Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         });
                     } catch (ClassNotFoundException | IOException ex) {
@@ -328,6 +332,15 @@ public class FXMLMainController implements Initializable {
     static String readFile(String path) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, StandardCharsets.UTF_8);
+    }
+
+    public void deleteFile(String id) throws IOException {
+        String path = "logs/" + id + ".txt";
+        File file = new File(path);
+
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     public void writeFromFile() throws IOException {
@@ -529,7 +542,7 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    private void utilisateursListViewOnMouseClicked(MouseEvent event) throws IOException {
+    private void utilisateursListViewOnMouseClicked(MouseEvent event) throws IOException, ParseException {
         selectedUser = utilisateursListView.getSelectionModel().getSelectedItem();
         if (selectedUser != null || selectedUser.getId() == null) {
             conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
@@ -546,7 +559,7 @@ public class FXMLMainController implements Initializable {
             }
 
             messagesTextArea.clear();
-            String userDate = selectedUser.getUserName() + " : " + conversationCorante.getDateModification();
+            String userDate = selectedUser.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
             utilisateurDateDeModificationLabel.setText(userDate);
             messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
             messagesAnchorPane.toFront();
@@ -931,14 +944,19 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     private void supprimerConversationIconViewOnMouseClicked(MouseEvent event) throws IOException {
-        chatAppFirstAnchorPane.toFront();
-        conversationsListView.getItems().remove(conversationCorante);
-        conversationCorante = conversationFacade.Supprimer(conversationCorante);
-        if (conversationsListView.getItems().isEmpty()) {
-            conversationsListView.toBack();
-            utilisateursListView.toBack();
-            aucuneMessageAnchorPane.toFront();
-        }
+        /*if (conversationCorante != null) {
+            chatAppFirstAnchorPane.toFront();
+            String id = conversationCorante.getId().toString();
+            deleteFile(id);
+            conversationCorante = conversationFacade.Supprimer(conversationCorante);
+            List<Conversation> conversations = getConversation();
+            conversationsListView.getItems().setAll(getUserFromConversation(conversations));
+            if (conversationsListView.getItems().isEmpty()) {
+                conversationsListView.toBack();
+                utilisateursListView.toBack();
+                aucuneMessageAnchorPane.toFront();
+            }
+        }*/
     }
 
 }
