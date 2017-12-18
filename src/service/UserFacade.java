@@ -111,6 +111,7 @@ public class UserFacade extends AbstractFacade {
     }
 
     public User modifier(User user, User connectedUser) throws IOException {
+        user.setId(user.getPaye().getId());
         UserService userService = new UserService(user, connectedUser, "modifier");
         userService = doExecute(userService);
         return (User) userService.getObjet();

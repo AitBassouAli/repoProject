@@ -624,7 +624,6 @@ public class FXMLMainController implements Initializable {
 
     private User getNewParams() throws ParseException {
         User user = new User();
-        user.setId(connectedUser.getId());
         user.setNom(nomTextField.getText());
         user.setPrenom(prenomTextField.getText());
         user.setEmail(emailTextField.getText());
