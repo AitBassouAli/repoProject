@@ -202,15 +202,15 @@ public class FXMLMainController implements Initializable {
                     try {
                         // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
                         Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
-                        User user = userFacade.find(message.getSender());
-                        String mesg = message.getMessage();
-                        try {
-                            SoundUtils.tone(400, 500, 0.2);
-                        } catch (LineUnavailableException ex) {
-                            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
                         Platform.runLater(() -> {
                             try {
+                                User user = userFacade.find(message.getSender());
+                                String mesg = message.getMessage();
+                                try {
+                                    SoundUtils.tone(400, 500, 0.2);
+                                } catch (LineUnavailableException ex) {
+                                    Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                                 Conversation conversationReceive = conversationFacade.findOrCreate(new Conversation(user, connectedUser));
                                 if (conversationCorante != null) {
                                     if ((conversationCorante.getReciever()).equals(user) || (conversationCorante.getSender()).equals(user)) {
