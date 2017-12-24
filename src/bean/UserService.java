@@ -6,6 +6,7 @@
 package bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,6 +95,9 @@ public class UserService implements Serializable {
     }
 
     public List<Object> getObjetList() {
+        if (objetList == null) {
+            objetList = new ArrayList<>();
+        }
         return objetList;
     }
 

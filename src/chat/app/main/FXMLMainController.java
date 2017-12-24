@@ -152,6 +152,7 @@ public class FXMLMainController implements Initializable {
     private User connectedUser = (User) Session.getAttribut("connectedUser");
     private User selectedUser;
     private Conversation conversationCorante;
+    private List<Conversation> conversations;
     @FXML
     private AnchorPane aucuneMessageAnchorPane;
     private Map<Long, String> messagesMap = new TreeMap<Long, String>();
@@ -160,6 +161,7 @@ public class FXMLMainController implements Initializable {
     private Thread t1;
     private Thread t2;
     private volatile boolean stop = false;
+    boolean exist = false;
     @FXML
     private FontAwesomeIconView supprimerConversationIconView;
 
@@ -200,7 +202,6 @@ public class FXMLMainController implements Initializable {
             while (!stop) {
                 while (connectedUser != null) {
                     try {
-                        // String[] msg = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
                         Message message = new ClientMT((Socket) Session.getAttribut("connectedSocket")).recieve();
                         Platform.runLater(() -> {
                             try {
@@ -225,8 +226,6 @@ public class FXMLMainController implements Initializable {
                                         }
                                     }
                                     messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
-                                    String userDate = user.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
-                                    utilisateurDateDeModificationLabel.setText(userDate);
                                 }
                                 if (conversationReceive != null) {
                                     if (!(messagesMap.containsKey(conversationReceive.getId()))) {
@@ -240,6 +239,8 @@ public class FXMLMainController implements Initializable {
                                         aucuneMessageAnchorPane.toBack();
                                     }
                                 }
+                                String userDate = user.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
+                                utilisateurDateDeModificationLabel.setText(userDate);
                             } catch (IOException ex) {
                                 System.out.println("Probleme dans la fonction refreshMeassagesTextArea()");
                             } catch (ParseException ex) {
@@ -295,12 +296,13 @@ public class FXMLMainController implements Initializable {
             Platform.runLater(() -> {
                 utilisateursListView.getItems().setAll(usersConnectee);
             });
+            isSelectedUserConnected();
         }
     }
 
     public void initConverarionListView() throws IOException {
         if (!stop) {
-            List<Conversation> conversations = getConversation();
+            conversations = getConversation();
             Platform.runLater(() -> {
                 conversationsListView.getItems().setAll(getUserFromConversation(conversations));
             });
@@ -375,8 +377,8 @@ public class FXMLMainController implements Initializable {
     }
 
     public List<Conversation> getConversation() throws IOException {
-        List<Conversation> conversations = conversationFacade.findByUser(connectedUser);
-        return conversations;
+        List<Conversation> conversationsList = conversationFacade.findByUser(connectedUser);
+        return conversationsList;
     }
 
     @FXML
@@ -515,17 +517,8 @@ public class FXMLMainController implements Initializable {
     @FXML
     private void envoyerMessageIconViewOnMouseClicked(MouseEvent event) throws IOException {
         String msg = messageAEnvoyerTextArea.getText();
-        messageAEnvoyerTextArea.setText("");
-        List<User> utilisateursTemp = userFacade.findUsersContaints(selectedUser.getUserName());
-        utilisateursTemp.remove(connectedUser);
-        boolean exist = false;
-        for (User u : utilisateursTemp) {
-            if (u.equals(selectedUser)) {
-                exist = true;
-            }
-        }
-        if (exist) {
-            messageAEnvoyerTextArea.setDisable(false);
+        if (!msg.equals("")) {
+            messageAEnvoyerTextArea.setText("");
             User userDist = selectedUser;
             messagesTextArea.applyCss();
             messagesTextArea.appendText("Vous  : " + msg + "\n");
@@ -535,8 +528,6 @@ public class FXMLMainController implements Initializable {
             if (conversationCorante != null) {
                 connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
             }
-        } else {
-            messageAEnvoyerTextArea.setDisable(true);
         }
     }
 
@@ -559,10 +550,10 @@ public class FXMLMainController implements Initializable {
     @FXML
     private void utilisateursListViewOnMouseClicked(MouseEvent event) throws IOException, ParseException {
         selectedUser = utilisateursListView.getSelectionModel().getSelectedItem();
-        if (selectedUser != null || selectedUser.getId() == null) {
+        if (selectedUser != null || selectedUser.getId() != null) {
             conversationCorante = conversationFacade.findOrCreate(new Conversation(connectedUser, selectedUser));
-            List<Conversation> conversations = getConversation();
-
+            isSelectedUserConnected();
+            messageAEnvoyerTextArea.setText("");
             conversationsListView.getItems().setAll(getUserFromConversation(conversations));
             rechercherTextField.setText("");
             conversationsListView.toFront();
@@ -597,20 +588,8 @@ public class FXMLMainController implements Initializable {
             if (messagesMap.containsKey(conversationCorante.getId())) {
                 messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
             }
-
-            List<User> utilisateursTemp = userFacade.findUsersContaints(selectedUser.getUserName());
-            utilisateursTemp.remove(connectedUser);
-            boolean exist = false;
-            for (User u : utilisateursTemp) {
-                if (u.equals(selectedUser)) {
-                    exist = true;
-                }
-            }
-            if (exist) {
-                messageAEnvoyerTextArea.setDisable(false);
-            } else {
-                messageAEnvoyerTextArea.setDisable(true);
-            }
+            isSelectedUserConnected();
+            messageAEnvoyerTextArea.setText("");
             messagesAnchorPane.toFront();
         }
     }
@@ -620,6 +599,12 @@ public class FXMLMainController implements Initializable {
         if (event.getCode().equals(KeyCode.ENTER)) {
             envoyerMessageIconViewOnMouseClicked(null);
         }
+    }
+
+    public void isSelectedUserConnected() {
+        exist = utilisateursListView.getItems().contains(selectedUser);
+        messageAEnvoyerTextArea.setDisable(!exist);
+        envoyerMessageIconView.setDisable(!exist);
     }
 
     private User getNewParams() throws ParseException {
