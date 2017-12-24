@@ -220,6 +220,9 @@ public class FXMLMainController implements Initializable {
                                     if (conversationReceive != null) {
                                         selectedUser = user;
                                         conversationCorante = conversationReceive;
+                                        if (messagesMap.containsKey(conversationCorante.getId())) {
+                                            messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
+                                        }
                                     }
                                     messagesTextArea.appendText(user.getUserName() + " : " + mesg + "\n");
                                     String userDate = user.getUserName() + " : " + myConvertDateToStringFranch(conversationCorante.getDateModification());
@@ -355,7 +358,6 @@ public class FXMLMainController implements Initializable {
                 try {
                     BufferedWriter bw = new BufferedWriter(new FileWriter(file));
                     bw.write(entry.getValue());
-                    bw.append(System.getProperty("line.separator"));
                     bw.flush();
                     bw.close();
                 } catch (IOException e) {
@@ -514,14 +516,27 @@ public class FXMLMainController implements Initializable {
     private void envoyerMessageIconViewOnMouseClicked(MouseEvent event) throws IOException {
         String msg = messageAEnvoyerTextArea.getText();
         messageAEnvoyerTextArea.setText("");
-        User userDist = selectedUser;
-        messagesTextArea.applyCss();
-        messagesTextArea.appendText("Vous  : " + msg + "\n");
-        if (messagesMap.containsKey(conversationCorante.getId())) {
-            messagesMap.put(conversationCorante.getId(), ((String) messagesMap.get(conversationCorante.getId()) + "Vous  : " + msg + System.getProperty("line.separator")));
+        List<User> utilisateursTemp = userFacade.findUsersContaints(selectedUser.getUserName());
+        utilisateursTemp.remove(connectedUser);
+        boolean exist = false;
+        for (User u : utilisateursTemp) {
+            if (u.equals(selectedUser)) {
+                exist = true;
+            }
         }
-        if (conversationCorante != null) {
-            connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
+        if (exist) {
+            messageAEnvoyerTextArea.setDisable(false);
+            User userDist = selectedUser;
+            messagesTextArea.applyCss();
+            messagesTextArea.appendText("Vous  : " + msg + "\n");
+            if (messagesMap.containsKey(conversationCorante.getId())) {
+                messagesMap.put(conversationCorante.getId(), ((String) messagesMap.get(conversationCorante.getId()) + "Vous  : " + msg + System.getProperty("line.separator")));
+            }
+            if (conversationCorante != null) {
+                connectedUsersFacade.envoyer(connectedUser, userDist, msg, conversationCorante);
+            }
+        } else {
+            messageAEnvoyerTextArea.setDisable(true);
         }
     }
 
@@ -581,6 +596,20 @@ public class FXMLMainController implements Initializable {
 
             if (messagesMap.containsKey(conversationCorante.getId())) {
                 messagesTextArea.setText((String) messagesMap.get(conversationCorante.getId()));
+            }
+
+            List<User> utilisateursTemp = userFacade.findUsersContaints(selectedUser.getUserName());
+            utilisateursTemp.remove(connectedUser);
+            boolean exist = false;
+            for (User u : utilisateursTemp) {
+                if (u.equals(selectedUser)) {
+                    exist = true;
+                }
+            }
+            if (exist) {
+                messageAEnvoyerTextArea.setDisable(false);
+            } else {
+                messageAEnvoyerTextArea.setDisable(true);
             }
             messagesAnchorPane.toFront();
         }
@@ -951,7 +980,7 @@ public class FXMLMainController implements Initializable {
             conversationCorante = conversationFacade.Supprimer(conversationCorante);
             List<Conversation> conversations = getConversation();
             conversationsListView.getItems().setAll(getUserFromConversation(conversations));
-            if (conversationsListView.getItems().isEmpty()) {
+            if (conversations == null ) {
                 conversationsListView.toBack();
                 utilisateursListView.toBack();
                 aucuneMessageAnchorPane.toFront();
